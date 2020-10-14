@@ -112,7 +112,7 @@ def evaluation(name ,index):
     confusion = confusion_matrix(Y_val, Y_pred)
     confusionResultStr = "Confusing Matrix - {} {}\n".format(name, index);
     cmtx = pd.DataFrame(confusion)
-    cmtx.to_csv("Confusing Matrix - {} {}.csv".format(name, index))
+    cmtx.to_csv("Confusing Matrix - {} DS{}.csv".format(name, index))
     print(confusionResultStr)
 
     #plt.figure(figsize = (20,20))
@@ -149,40 +149,40 @@ model2 = GaussianNB()
 process("GNB")
 
 
-##Baseline Decision Tree - b
-#from sklearn.tree import DecisionTreeClassifier
-#model1 = DecisionTreeClassifier(criterion="entropy")
-#model2 = DecisionTreeClassifier(criterion="entropy")
-#process("Base-DT")
+#Baseline Decision Tree - b
+from sklearn.tree import DecisionTreeClassifier
+model1 = DecisionTreeClassifier(criterion="entropy")
+model2 = DecisionTreeClassifier(criterion="entropy")
+process("Base-DT")
 
 
-##Best Decision Tree - c
-#from sklearn.tree import DecisionTreeClassifier
-#model1 = DecisionTreeClassifier(criterion="gini", max_depth=None, min_samples_split=2, min_impurity_decrease=0.0, class_weight="balanced")
-#model2 = DecisionTreeClassifier(criterion="gini", max_depth=None, min_samples_split=2, min_impurity_decrease=0.0, class_weight="balanced")
-#process("Best-DT")
+#Best Decision Tree - c
+from sklearn.tree import DecisionTreeClassifier
+model1 = DecisionTreeClassifier(criterion="gini", max_depth=None, min_samples_split=2, min_impurity_decrease=0.0, class_weight="balanced")
+model2 = DecisionTreeClassifier(criterion="gini", max_depth=None, min_samples_split=2, min_impurity_decrease=0.0, class_weight="balanced")
+process("Best-DT")
 
 
-##Perceptron - d
-#from sklearn.linear_model import Perceptron
-#model1 = Perceptron()
-#model2 = Perceptron()
-#process("PER")
+#Perceptron - d
+from sklearn.linear_model import Perceptron
+model1 = Perceptron()
+model2 = Perceptron()
+process("PER")
 
 
-##Base MLP - e
-#from sklearn.neural_network import MLPClassifier
-#model1 = MLPClassifier(hidden_layer_sizes=(100), activation='logistic', solver='sgd')
-#model2 = MLPClassifier(hidden_layer_sizes=(100), activation='logistic', solver='sgd')
-#process("Base-MLP")
+#Base MLP - e
+from sklearn.neural_network import MLPClassifier
+model1 = MLPClassifier(hidden_layer_sizes=(100), activation='logistic', solver='sgd')
+model2 = MLPClassifier(hidden_layer_sizes=(100), activation='logistic', solver='sgd')
+process("Base-MLP")
 
 
-##Best MLP - f
-##model = MLPClassifier(hidden_layer_sizes=(150,100,50), activation='relu', learning_rate_init=0.01, max_iter=500,  solver='adam', random_state=1)
-#from sklearn.neural_network import MLPClassifier
-#model1 = MLPClassifier(hidden_layer_sizes=(150,100,50), activation='relu', solver='adam', random_state=1)
-#model2 = MLPClassifier(hidden_layer_sizes=(150,100,50), activation='relu', solver='adam', random_state=1)
-#process("Best-MLP")
+#Best MLP - f
+#model = MLPClassifier(hidden_layer_sizes=(150,100,50), activation='relu', learning_rate_init=0.01, max_iter=500,  solver='adam', random_state=1)
+from sklearn.neural_network import MLPClassifier
+model1 = MLPClassifier(hidden_layer_sizes=(150,100,50), activation='relu', solver='adam', random_state=1)
+model2 = MLPClassifier(hidden_layer_sizes=(150,100,50), activation='relu', solver='adam', random_state=1)
+process("Best-MLP")
 
 
 
