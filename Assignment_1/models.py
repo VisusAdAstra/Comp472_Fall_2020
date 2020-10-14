@@ -44,8 +44,6 @@ info2 = pd.read_csv('Assig1-Dataset/info_2.csv')
 
 #validation
 def validation(index):
-    """
-    """
     if index==1:
         X_train = data1.values[:,:-1]
         Y_train = data1.values[:,-1:]
@@ -66,8 +64,6 @@ def validation(index):
 
 #test
 def test(index):
-    """
-    """
     if index==1:
         X_test = test1.values[:,:-1]
         Y_test = test1.values[:,-1:]
@@ -82,8 +78,6 @@ def test(index):
 
 #save
 def save(name, index):
-    """
-    """
     if index==1:
         Input = samp1.values
         Output = model1.predict(Input)
@@ -98,8 +92,6 @@ def save(name, index):
 
 #evaluation
 def evaluation(name ,index):
-    """
-    """
     if index==1:
         X_val = vali1.values[:,:-1]
         Y_val = vali1.values[:,-1:]
@@ -123,8 +115,6 @@ def evaluation(name ,index):
 
 #process
 def process(name):
-    """
-    """
     validation(1)
     test(1)
     save(name, 1) 
