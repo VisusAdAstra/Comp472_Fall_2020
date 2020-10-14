@@ -1,20 +1,20 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# Readme: execute each block by adding #%%
-# Python 3.8, Sklearn 0.23.2
+# In[2]:
 
-#%%
+
 import pandas as pd
 import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import sklearn
 import sklearn.preprocessing         # For scale function
-import sklearn.metrics as metrics    # Fo# for label size
-from sklearn.metrics import confusion_matrix
-from sklearn.metrics import classification_report
-import seaborn as sn
+import sklearn.metrics as metrics    # For for label size
+
+
+# In[3]:
+
 
 #load
 data1 = pd.read_csv('Assig1-Dataset/train_1.csv')
@@ -31,37 +31,116 @@ info1 = pd.read_csv('Assig1-Dataset/info_1.csv')
 info2 = pd.read_csv('Assig1-Dataset/info_2.csv')
 
 
+# In[20]:
+
+
 #normalize
-#from sklearn.preprocessing import StandardScaler
-#data1.replace('?', np.nan, inplace= True)
-#data1 = data1.astype({"avg": np.float64})
-#sc = StandardScaler()
-#X_train = sc.fit_transform(x_train)
-#X_test = sc.transform(x_test)
+from sklearn.preprocessing import StandardScaler
+data1.replace('?', np.nan, inplace= True)
+data1 = data1.astype({"avg": np.float64})
+sc = StandardScaler()
+X_train = sc.fit_transform(x_train)
+X_test = sc.transform(x_test)
 
 
-################################### Methods ##########################################
+# In[81]:
 
-#validation
-def validation(index):
+
+#GaussianNB
+from sklearn.naive_bayes import GaussianNB
+model1 = GaussianNB()
+model2 = GaussianNB()
+process("GNB")
+
+
+# In[34]:
+
+
+#Baseline Decision Tree
+from sklearn.tree import DecisionTreeClassifier
+model1 = DecisionTreeClassifier(criterion="entropy")
+model2 = DecisionTreeClassifier(criterion="entropy")
+process("Base-DT")
+
+
+# In[21]:
+
+
+#Best Decision Tree
+from sklearn.tree import DecisionTreeClassifier
+model1 = DecisionTreeClassifier(criterion="gini", max_depth=None, min_samples_split=2, min_impurity_decrease=0.0, class_weight="balanced")
+model2 = DecisionTreeClassifier(criterion="gini", max_depth=None, min_samples_split=2, min_impurity_decrease=0.0, class_weight="balanced")
+process("Best-DT")
+
+
+# In[35]:
+
+
+#Perceptron
+from sklearn.linear_model import Perceptron
+model1 = Perceptron()
+model2 = Perceptron()
+process("PER")
+
+
+# In[82]:
+
+
+#Base MLP
+from sklearn.neural_network import MLPClassifier
+model1 = MLPClassifier(hidden_layer_sizes=(100), activation='logistic', solver='sgd')
+model2 = MLPClassifier(hidden_layer_sizes=(100), activation='logistic', solver='sgd')
+process("Base-MLP")
+
+
+# In[84]:
+
+
+#Best MLP
+#model = MLPClassifier(hidden_layer_sizes=(150,100,50), activation='relu', learning_rate_init=0.01, max_iter=500,  solver='adam', random_state=1)
+from sklearn.neural_network import MLPClassifier
+model1 = MLPClassifier(hidden_layer_sizes=(150,100,50), activation='relu', solver='adam', random_state=1)
+model2 = MLPClassifier(hidden_layer_sizes=(150,100,50), activation='relu', solver='adam', random_state=1)
+process("Best-MLP")
+
+
+# In[4]:
+
+
+#train
+def train(index):
     """
     """
     if index==1:
         X_train = data1.values[:,:-1]
         Y_train = data1.values[:,-1:]
         model1.fit(X_train, Y_train)
-        X_val = vali1.values[:,:-1]
-        Y_val = vali1.values[:,-1:]
-        Y_pred = model1.predict(X_val)
     elif index==2:
         X_train = data2.values[:,:-1]
         Y_train = data2.values[:,-1:]
         model2.fit(X_train, Y_train)
+
+
+# In[5]:
+
+
+#validation
+def validation(index):
+    """
+    """
+    if index==1:
+        X_val = vali1.values[:,:-1]
+        Y_val = vali1.values[:,-1:]
+        Y_pred = model1.predict(X_val)
+    elif index==2:
         X_val = vali2.values[:,:-1]
         Y_val = vali2.values[:,-1:]
         Y_pred = model2.predict(X_val)
 
     print(metrics.accuracy_score(Y_val, Y_pred))
+
+
+# In[6]:
 
 
 #test
@@ -80,6 +159,9 @@ def test(index):
     print(metrics.accuracy_score(Y_test, Y_pred))
 
 
+# In[7]:
+
+
 #save
 def save(name, index):
     """
@@ -96,8 +178,14 @@ def save(name, index):
     df.to_csv(name + "-DS" + str(index) + ".csv") 
 
 
+# In[8]:
+
+
 #evaluation
-def evaluation(name ,index):
+from sklearn.metrics import confusion_matrix
+from sklearn.metrics import classification_report
+import seaborn as sn
+def evaluation(index):
     """
     """
     if index==1:
@@ -110,8 +198,7 @@ def evaluation(name ,index):
         Y_pred = model2.predict(X_val)
 
     confusion = confusion_matrix(Y_val, Y_pred)
-    confusionResultStr = "Confusing Matrix - {} {}\n".format(name, index);
-    print(confusionResultStr)
+    print('Confusion Matrix\n')
     plt.figure(figsize = (20,20))
     sn.set(font_scale=1) # for label size
     sn.heatmap(confusion, annot=True, annot_kws={"size": 12}, cmap='Oranges', fmt='d') # font size
@@ -121,62 +208,62 @@ def evaluation(name ,index):
     print(classification_report(Y_val, Y_pred))
 
 
+# In[9]:
+
+
 #process
 def process(name):
     """
     """
+    train(1)
     validation(1)
     test(1)
     save(name, 1) 
+    train(2)
     validation(2)
     test(2)
     save(name, 2)
-    evaluation(name, 1)
-    evaluation(name, 2)
-    
-################################### Main ##########################################
-
-#GaussianNB - a
-from sklearn.naive_bayes import GaussianNB
-model1 = GaussianNB()
-model2 = GaussianNB()
-process("GNB")
+    evaluation(1)
+    evaluation(2)
 
 
-#Baseline Decision Tree - b
-from sklearn.tree import DecisionTreeClassifier
-model1 = DecisionTreeClassifier(criterion="entropy")
-model2 = DecisionTreeClassifier(criterion="entropy")
-process("Base-DT")
+# In[23]:
 
 
-#Best Decision Tree - c
-from sklearn.tree import DecisionTreeClassifier
-model1 = DecisionTreeClassifier(criterion="gini", max_depth=None, min_samples_split=2, min_impurity_decrease=0.0, class_weight="balanced")
-model2 = DecisionTreeClassifier(criterion="gini", max_depth=None, min_samples_split=2, min_impurity_decrease=0.0, class_weight="balanced")
-process("Best-DT")
-
-
-#Perceptron - d
-from sklearn.linear_model import Perceptron
-model1 = Perceptron()
-model2 = Perceptron()
-process("PER")
-
-
-#Base MLP - e
+from sklearn.model_selection import RepeatedStratifiedKFold
+from sklearn.model_selection import GridSearchCV
 from sklearn.neural_network import MLPClassifier
-model1 = MLPClassifier(hidden_layer_sizes=(100), activation='logistic', solver='sgd')
-model2 = MLPClassifier(hidden_layer_sizes=(100), activation='logistic', solver='sgd')
-process("Base-MLP")
+def gridSearch(index):
+    """
+    """
+    # split into input and output elements
+    if index==1:
+        X_train = data1.values[:,:-1]
+        Y_train = data1.values[:,-1:]
+    elif index==2:
+        X_train = data2.values[:,:-1]
+        Y_train = data2.values[:,-1:]
+    # define model
+    model = MLPClassifier()
+    # define evaluation
+    cv = RepeatedStratifiedKFold(n_splits=10, n_repeats=3, random_state=1)
+    # define search space
+    space = dict()
+    space['hidden_layer_sizes'] = [(50,30,10), (30,30,30), (50,40), (45,45), (90)]
+    space['activation'] = ['identity', 'logistic', 'tanh', 'relu']
+    space['solver'] = ['sgd', 'adam']#'lbfgs', 
+    # define search
+    search = GridSearchCV(model, space, scoring='accuracy', n_jobs=-1, cv=3)
+    # execute search
+    result = search.fit(X_train, Y_train)
+    # summarize result
+    print('Best Score: %s' % result.best_score_)
+    print('Best Hyperparameters: %s' % result.best_params_)
+
+gridSearch(1)
 
 
-#Best MLP - f
-#model = MLPClassifier(hidden_layer_sizes=(150,100,50), activation='relu', learning_rate_init=0.01, max_iter=500,  solver='adam', random_state=1)
-from sklearn.neural_network import MLPClassifier
-model1 = MLPClassifier(hidden_layer_sizes=(150,100,50), activation='relu', solver='adam', random_state=1)
-model2 = MLPClassifier(hidden_layer_sizes=(150,100,50), activation='relu', solver='adam', random_state=1)
-process("Best-MLP")
+# In[ ]:
 
 
 
