@@ -42,19 +42,24 @@ info2 = pd.read_csv('Assig1-Dataset/info_2.csv')
 
 ################################### Methods ##########################################
 
-#validation
-def validation(index):
+#train
+def train(index):
     if index==1:
         X_train = data1.values[:,:-1]
         Y_train = data1.values[:,-1:]
         model1.fit(X_train, Y_train)
-        X_val = vali1.values[:,:-1]
-        Y_val = vali1.values[:,-1:]
-        Y_pred = model1.predict(X_val)
     elif index==2:
         X_train = data2.values[:,:-1]
         Y_train = data2.values[:,-1:]
         model2.fit(X_train, Y_train)
+
+#validation
+def validation(index):
+    if index==1:
+        X_val = vali1.values[:,:-1]
+        Y_val = vali1.values[:,-1:]
+        Y_pred = model1.predict(X_val)
+    elif index==2:
         X_val = vali2.values[:,:-1]
         Y_val = vali2.values[:,-1:]
         Y_pred = model2.predict(X_val)
@@ -121,9 +126,11 @@ def evaluation(name ,index):
 
 #process
 def process(name):
+	train(1)
     validation(1)
     test(1)
     save(name, 1) 
+	train(2)
     validation(2)
     test(2)
     save(name, 2)
@@ -168,10 +175,9 @@ process("Base-MLP")
 
 
 #Best MLP - f
-#model = MLPClassifier(hidden_layer_sizes=(150,100,50), activation='relu', learning_rate_init=0.01, max_iter=500,  solver='adam', random_state=1)
 from sklearn.neural_network import MLPClassifier
-model1 = MLPClassifier(hidden_layer_sizes=(150,100,50), activation='relu', solver='adam', random_state=1)
-model2 = MLPClassifier(hidden_layer_sizes=(150,100,50), activation='relu', solver='adam', random_state=1)
+model1 = MLPClassifier(hidden_layer_sizes=(100), activation='logistic', solver='adam', random_state=1)
+model2 = MLPClassifier(hidden_layer_sizes=(50,50), activation='tanh', solver='adam', random_state=1)
 process("Best-MLP")
 
 
