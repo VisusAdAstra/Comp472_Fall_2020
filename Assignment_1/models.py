@@ -111,15 +111,21 @@ def evaluation(name ,index):
 
     confusion = confusion_matrix(Y_val, Y_pred)
     confusionResultStr = "Confusing Matrix - {} {}\n".format(name, index);
+    cmtx = pd.DataFrame(confusion)
+    cmtx.to_csv("Confusing Matrix - {} DS{}.csv".format(name, index))
     print(confusionResultStr)
-    plt.figure(figsize = (20,20))
-    sn.set(font_scale=1) # for label size
-    sn.heatmap(confusion, annot=True, annot_kws={"size": 12}, cmap='Oranges', fmt='d') # font size
-    plt.show()
+
+    #plt.figure(figsize = (20,20))
+    #sn.set(font_scale=1) # for label size
+    #sn.heatmap(confusion, annot=True, annot_kws={"size": 12}, cmap='Oranges', fmt='d') # font size
+    #plt.show()
 
     print('\nClassification Report\n')
-    print(classification_report(Y_val, Y_pred))
+    report = classification_report(Y_val, Y_pred, output_dict=True)
 
+    #Classification Report to CSV
+    df = pd.DataFrame(report).transpose()
+    df.to_csv(name + "-DS" + str(index) + ".csv", mode='a', header=True)
 
 #process
 def process(name):
