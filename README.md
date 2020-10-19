@@ -1,3 +1,5 @@
+git repo: github.com/darkheros12/Comp472_Fall_2020
+
 # Comp472_Assignment_1
 
 ## Topic
