@@ -126,11 +126,11 @@ def evaluation(name ,index):
 
 #process
 def process(name):
-	train(1)
+    train(1)
     validation(1)
     test(1)
     save(name, 1) 
-	train(2)
+    train(2)
     validation(2)
     test(2)
     save(name, 2)
@@ -155,10 +155,9 @@ process("Base-DT")
 
 #Best Decision Tree - c
 from sklearn.tree import DecisionTreeClassifier
-model1 = DecisionTreeClassifier(criterion="gini", max_depth=None, min_samples_split=2, min_impurity_decrease=0.0, class_weight="balanced")
-model2 = DecisionTreeClassifier(criterion="gini", max_depth=None, min_samples_split=2, min_impurity_decrease=0.0, class_weight="balanced")
+model1 = DecisionTreeClassifier(criterion="entropy", max_depth=None, min_samples_split=5, min_impurity_decrease=0.0003, class_weight="balanced")
+model2 = DecisionTreeClassifier(criterion="entropy", max_depth=None, min_samples_split=10, min_impurity_decrease=0.0, class_weight=None)
 process("Best-DT")
-
 
 #Perceptron - d
 from sklearn.linear_model import Perceptron
