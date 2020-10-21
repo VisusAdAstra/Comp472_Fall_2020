@@ -17,7 +17,7 @@ from sklearn.metrics import classification_report
 import seaborn as sn
 
 #load
-data1 = pd.read_csv('Assig1-Dataset/train_1.csv')
+data1 = pd.read_csv('Assig1-Dataset/train_1.csv') #change file
 vali1 = pd.read_csv('Assig1-Dataset/val_1.csv')
 test1 = pd.read_csv('Assig1-Dataset/test_with_label_1.csv')
 samp1 = pd.read_csv('Assig1-Dataset/test_no_label_1.csv')
@@ -25,7 +25,7 @@ samp1 = pd.read_csv('Assig1-Dataset/test_no_label_1.csv')
 data2 = pd.read_csv('Assig1-Dataset/train_2.csv')
 vali2 = pd.read_csv('Assig1-Dataset/val_2.csv')
 test2 = pd.read_csv('Assig1-Dataset/test_with_label_2.csv')
-samp2 = pd.read_csv('Assig1-Dataset/test_no_label_2.csv')
+samp2 = pd.read_csv('Assig1-Dataset/31.csv')
 
 info1 = pd.read_csv('Assig1-Dataset/info_1.csv')
 info2 = pd.read_csv('Assig1-Dataset/info_2.csv')
@@ -92,7 +92,7 @@ def save(name, index):
     
     dict = {'Output': Output}  
     df = pd.DataFrame(dict) 
-    df.to_csv("output file/" + name + "-DS" + str(index) + ".csv") 
+    df.to_csv("output file demo/" + name + "-DS" + str(index) + ".csv") 
 
 
 #evaluation
@@ -109,20 +109,21 @@ def evaluation(name ,index):
     confusion = confusion_matrix(Y_val, Y_pred)
     confusionResultStr = "Confusing Matrix - {} {}\n".format(name, index);
     cmtx = pd.DataFrame(confusion)
-    cmtx.to_csv("output file/" + "Confusing Matrix - {} DS{}.csv".format(name, index))
+    cmtx.to_csv("output file demo/" + "Confusing Matrix - {} DS{}.csv".format(name, index))
     print(confusionResultStr)
 
-    #plt.figure(figsize = (20,20))
-    #sn.set(font_scale=1) # for label size
-    #sn.heatmap(confusion, annot=True, annot_kws={"size": 12}, cmap='Oranges', fmt='d') # font size
-    #plt.show()
+    plt.figure(figsize = (20,20))
+    sn.set(font_scale=1) # for label size
+    sn.heatmap(confusion, annot=True, annot_kws={"size": 12}, cmap='Oranges', fmt='d') # font size
+    plt.show()
 
     print('\nClassification Report\n')
     report = classification_report(Y_val, Y_pred, output_dict=True)
+    print(report)
 
     #Classification Report to CSV
     df = pd.DataFrame(report).transpose()
-    df.to_csv("output file/" + name + "-DS" + str(index) + ".csv", mode='a', header=True)
+    df.to_csv("output file demo/" + name + "-DS" + str(index) + ".csv", mode='a', header=True)
 
 #process
 def process(name):
@@ -136,48 +137,59 @@ def process(name):
     save(name, 2)
     evaluation(name, 1)
     evaluation(name, 2)
+
+def demo(name):
+    train(2)
+    validation(2)
+    test(2)
+    save(name, 2) 
+    evaluation(name,2)
     
 ################################### Main ##########################################
 
-#GaussianNB - a
-from sklearn.naive_bayes import GaussianNB
-model1 = GaussianNB()
-model2 = GaussianNB()
-process("GNB")
+#from sklearn.naive_bayes import GaussianNB
+#model1 = GaussianNB() #change model
+#demo("GNB")
+
+##GaussianNB - a
+#from sklearn.naive_bayes import GaussianNB
+#model1 = GaussianNB()
+#model2 = GaussianNB()
+#process("GNB")
 
 
-#Baseline Decision Tree - b
-from sklearn.tree import DecisionTreeClassifier
-model1 = DecisionTreeClassifier(criterion="entropy")
-model2 = DecisionTreeClassifier(criterion="entropy")
-process("Base-DT")
+##Baseline Decision Tree - b
+#from sklearn.tree import DecisionTreeClassifier
+#model1 = DecisionTreeClassifier(criterion="entropy")
+#model2 = DecisionTreeClassifier(criterion="entropy")
+#process("Base-DT")
 
 
-#Best Decision Tree - c
-from sklearn.tree import DecisionTreeClassifier
-model1 = DecisionTreeClassifier(criterion="entropy", max_depth=None, min_samples_split=5, min_impurity_decrease=0.0003, class_weight="balanced")
-model2 = DecisionTreeClassifier(criterion="entropy", max_depth=None, min_samples_split=10, min_impurity_decrease=0.0, class_weight=None)
-process("Best-DT")
+##Best Decision Tree - c
+#from sklearn.tree import DecisionTreeClassifier
+#model1 = DecisionTreeClassifier(criterion="entropy", max_depth=None, min_samples_split=5, min_impurity_decrease=0.0003, class_weight="balanced")
+#model2 = DecisionTreeClassifier(criterion="entropy", max_depth=None, min_samples_split=10, min_impurity_decrease=0.0, class_weight=None)
+#process("Best-DT")
 
 #Perceptron - d
 from sklearn.linear_model import Perceptron
 model1 = Perceptron()
 model2 = Perceptron()
-process("PER")
+demo("PER")
 
 
-#Base MLP - e
-from sklearn.neural_network import MLPClassifier
-model1 = MLPClassifier(hidden_layer_sizes=(100), activation='logistic', solver='sgd')
-model2 = MLPClassifier(hidden_layer_sizes=(100), activation='logistic', solver='sgd')
-process("Base-MLP")
+##Base MLP - e
+#from sklearn.neural_network import MLPClassifier
+#model1 = MLPClassifier(hidden_layer_sizes=(100), activation='logistic', solver='sgd')
+#model2 = MLPClassifier(hidden_layer_sizes=(100), activation='logistic', solver='sgd')
+#process("Base-MLP")
 
 
-#Best MLP - f
-from sklearn.neural_network import MLPClassifier
-model1 = MLPClassifier(hidden_layer_sizes=(100), activation='logistic', solver='adam', random_state=1)
-model2 = MLPClassifier(hidden_layer_sizes=(50,50), activation='tanh', solver='adam', random_state=1)
-process("Best-MLP")
+##Best MLP - f
+#from sklearn.neural_network import MLPClassifier
+#model1 = MLPClassifier(hidden_layer_sizes=(100), activation='logistic', solver='adam', random_state=1)
+#model2 = MLPClassifier(hidden_layer_sizes=(50,50), activation='tanh', solver='adam', random_state=1)
+#process("Best-MLP")
 
 
 
