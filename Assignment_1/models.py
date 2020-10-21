@@ -98,12 +98,12 @@ def save(name, index):
 #evaluation
 def evaluation(name ,index):
     if index==1:
-        X_val = vali1.values[:,:-1]
-        Y_val = vali1.values[:,-1:]
+        X_val = test1.values[:,:-1]
+        Y_val = test1.values[:,-1:]
         Y_pred = model1.predict(X_val)
     elif index==2:
-        X_val = vali2.values[:,:-1]
-        Y_val = vali2.values[:,-1:]
+        X_val = test2.values[:,:-1]
+        Y_val = test2.values[:,-1:]
         Y_pred = model2.predict(X_val)
 
     confusion = confusion_matrix(Y_val, Y_pred)
