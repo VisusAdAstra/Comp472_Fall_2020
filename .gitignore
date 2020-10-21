@@ -127,3 +127,4 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+/.vs/Comp472_Assignment/v16/.suo
