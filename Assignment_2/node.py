@@ -2,13 +2,13 @@ import sys
 from queue import Queue
 from copy import deepcopy
 
-'''
-Instantiates the node. Only the passing argument
-"puzzle" is necessary for the creating of a Node.
-So, we've given the other two values a default value.
-'''
 
 class Node:
+    '''
+    Instantiates the node. Only the passing argument
+    "puzzle" is necessary for the creating of a Node.
+    So, we've given the other two values a default value.
+    '''
     def __init__(self, puzzle, parent=None, move=""):
         self.state = puzzle
         self.parent = parent

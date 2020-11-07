@@ -3,11 +3,14 @@ from random import randint
 
 
 class XPuzzle:
-	def __init__(self,size):
+	'''
+    Instantiates the class, defining the start node
+    '''
+	def __init__(self, size):
 		self.size=size
 		self.puzzle=[]
 		self.zero=(0,0)
-		self.moves=["U","D","L","R"]
+		self.moves=["U","D","L","R","WM","DM"]
 		count=1
 		for i in range(0,size):
 			self.puzzle.append([])
@@ -71,6 +74,7 @@ class XPuzzle:
 			for j in range(0,self.size):
 				print(self.puzzle[i][j], end=" ")
 			print("")
+		print("")
 
 	def doMove(self,move):
 		if move=="U":

@@ -4,13 +4,12 @@ from queue import LifoQueue
 from queue import PriorityQueue
 import importlib
 import xpuzzle
-import node
 importlib.reload(xpuzzle)
+import node
 importlib.reload(node)
 
 
 class Search:
-
     '''
     Instantiates the class, defining the start node
     '''
