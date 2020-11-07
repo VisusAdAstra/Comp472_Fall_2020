@@ -5,9 +5,7 @@ from copy import deepcopy
 
 class Node:
     '''
-    Instantiates the node. Only the passing argument
-    "puzzle" is necessary for the creating of a Node.
-    So, we've given the other two values a default value.
+	
     '''
     def __init__(self, puzzle, parent=None, move=""):
         self.state = puzzle
@@ -55,35 +53,28 @@ class Node:
 
     '''
     First heuristic - number of wrong tiles
-    Every time there's a tile in the wrong place, we
-    add 1 to the result. Heavily inspired in the
-    puzzle.checkPuzzle() loop.
     '''
     def nWrongTiles(self):
         result = 0
         count = 1
-        for i in range(0,self.state.size):
-            for j in range(0,self.state.size):
-                if self.state.puzzle[i][j]!=(count%(self.state.size*self.state.size)):
+        for i in range(0,self.state.row):
+            for j in range(0,self.state.col):
+                if self.state.puzzle[i][j]!=(count%(self.state.row*self.state.col)):
                     result += 1
                 count+=1
         return result
 
     '''
-    Second heuristic - distance of wrong tiles to their
-    right position. After a little bit of scheming, came
-    the mathematical conclusion that:
-    x = n-1 %3
-    y = n-1 /3
-    which concluded into the following result.
+    Second heuristic - manhattanDistance 
+	still wrong need modification
     '''
     def manhattanDistance(self):
         result = 0
         count = 1
-        for i in range(0,self.state.size):
-            for j in range(0,self.state.size):
+        for i in range(0,self.state.row):
+            for j in range(0,self.state.col):
                 index = self.state.puzzle[i][j] - 1
-                distance = (2-i)+(2-j) if index == -1 else abs(i-(index/self.state.size))+abs(j-(index%self.state.size))
+                distance = (2-i)+(2-j) if index == -1 else abs(i-(index/self.state.row))+abs(j-(index%self.state.col))
                 result += distance
                 count+=1
         return result

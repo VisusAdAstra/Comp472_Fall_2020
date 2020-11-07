@@ -6,25 +6,33 @@ class XPuzzle:
 	'''
     Instantiates the class, defining the start node
     '''
-	def __init__(self, size):
-		self.size=size
+	def __init__(self, row, col):
+		self.row=row
+		self.col=col
 		self.puzzle=[]
 		self.zero=(0,0)
 		self.moves=["U","D","L","R","WM","DM"]
 		count=1
-		for i in range(0,size):
+		for i in range(0,row):
 			self.puzzle.append([])
-			for j in range(0,size):
+			for j in range(0,col):
 				self.puzzle[i].append(count)
 				count+=1
-		self.puzzle[size-1][size-1]=0
-		self.zero=(size-1,size-1)
+		self.puzzle[row-1][col-1]=0
+		self.zero=(row-1,col-1)
 
-	def readPuzzle(self,string):
+	def initialize(self, list):
+		for i in range(0,self.row):
+			for j in range(0,self.col):
+				if int(list[i*self.col+j])==0:
+					self.zero=(i,j)
+				self.puzzle[i][j]=int(list[i*self.col+j])
+
+	def readPuzzle(self, string):
 		a=string.split(" ")
 		count=0
-		for i in range(0,self.size):
-			for j in range(0,self.size):
+		for i in range(0,self.row):
+			for j in range(0,self.col):
 				if int(a[count])==0:
 					self.zero=(i,j)
 				self.puzzle[i][j]=int(a[count])
@@ -32,9 +40,9 @@ class XPuzzle:
 
 	def checkPuzzle(self):
 		count=1
-		for i in range(0,self.size):
-			for j in range(0,self.size):
-				if self.puzzle[i][j]!=(count%(self.size*self.size)):
+		for i in range(0,self.row):
+			for j in range(0,self.col):
+				if self.puzzle[i][j]!=(count%(self.row*self.col)):
 					return False
 				count+=1
 		return True
@@ -54,7 +62,7 @@ class XPuzzle:
 			self.zero=(self.zero[0]-1,self.zero[1])
 
 	def down(self):
-		if (self.zero[0]!=self.size-1):
+		if (self.zero[0]!=self.row-1):
 			self.swap((self.zero[0]+1,self.zero[1]),self.zero)
 			self.zero=(self.zero[0]+1,self.zero[1])
 
@@ -65,13 +73,13 @@ class XPuzzle:
 
 
 	def right(self):
-		if (self.zero[1]!=self.size-1):
+		if (self.zero[1]!=self.col-1):
 			self.swap((self.zero[0],self.zero[1]+1),self.zero)
 			self.zero=(self.zero[0],self.zero[1]+1)
 	
 	def printPuzzle(self):
-		for i in range(0,self.size):
-			for j in range(0,self.size):
+		for i in range(0,self.row):
+			for j in range(0,self.col):
 				print(self.puzzle[i][j], end=" ")
 			print("")
 		print("")
@@ -86,59 +94,3 @@ class XPuzzle:
 		if move=="R":
 			self.right()
 	
-	def permute(self,numPerm):
-		for i in range(0,numPerm):
-			self.doMove(self.moves[randint(0,3)])
-	
-	def parseMoveSequence(self,string):
-		for m in string:
-			self.doMove(m)
-			
-		
-
-#t=tilePuzzle(int(sys.argv[1]))
-#t.permute(int(sys.argv[2]))
-#t.printPuzzle()
-  
-# Module Methods
-
-EIGHT_PUZZLE_DATA = [[1, 0, 2, 3, 4, 5, 6, 7, 8], 
-                     [1, 7, 8, 2, 3, 4, 5, 6, 0], 
-                     [4, 3, 2, 7, 0, 5, 1, 6, 8], 
-                     [5, 1, 3, 4, 0, 2, 6, 7, 8], 
-                     [1, 2, 5, 7, 6, 8, 0, 4, 3], 
-                     [0, 3, 1, 6, 8, 2, 7, 5, 4]]
-
-def loadEightPuzzle(puzzleNumber):
-  """
-    puzzleNumber: The number of the eight puzzle to load.
-    
-    Returns an eight puzzle object generated from one of the
-    provided puzzles in EIGHT_PUZZLE_DATA.
-    
-    puzzleNumber can range from 0 to 5.
-    
-    >>> print loadEightPuzzle(0)
-    -------------
-    | 1 |   | 2 |
-    -------------
-    | 3 | 4 | 5 |
-    -------------
-    | 6 | 7 | 8 |
-    -------------
-  """
-  return EightPuzzleState(EIGHT_PUZZLE_DATA[puzzleNumber])
-
-def createRandomEightPuzzle(moves=100):
- """
-   moves: number of random moves to apply
-
-   Creates a random eight puzzle by applying
-   a series of 'moves' random moves to a solved
-   puzzle.
- """
- puzzle = EightPuzzleState([0,1,2,3,4,5,6,7,8])
- for i in range(moves):
-   # Execute a random legal move
-   puzzle = puzzle.result(random.sample(puzzle.legalMoves(), 1)[0])
- return puzzle
