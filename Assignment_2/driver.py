@@ -64,15 +64,16 @@ print(inputData)
 # In[253]:
 
 
-t=xpuzzle.XPuzzle(2, 4)
-t.initialize(inputData[1])#inputData[0] no solution
+t=xpuzzle.XPuzzle(2, 4, inputData[3]) #inputData[0] no solution
+t.doMove("C")
 t.printPuzzle()
-s=search.Search(t)
 
-p = s.greedy(0)
+s=search.Search(t)
+p = s.bestFirst()
 p.state.printPuzzle()
-p = s.aSearch(0)
+p = s.aStar(1)
 p.state.printPuzzle()
+p.state.manhattanDistance()
 
 
 # In[ ]:
