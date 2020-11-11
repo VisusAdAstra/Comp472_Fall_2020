@@ -5,7 +5,9 @@ from copy import deepcopy
 
 class Node:
     '''
-	
+    Instantiates the node. Only the passing argument
+    "puzzle" is necessary for the creating of a Node.
+    So, we've given the other two values a default value.
     '''
     def __init__(self, puzzle, parent=None, move=""):
         self.state = puzzle
@@ -53,6 +55,9 @@ class Node:
 
     '''
     First heuristic - number of wrong tiles
+    Every time there's a tile in the wrong place, we
+    add 1 to the result. Heavily inspired in the
+    puzzle.checkPuzzle() loop.
     '''
     def nWrongTiles(self):
         result = 0
@@ -65,8 +70,12 @@ class Node:
         return result
 
     '''
-    Second heuristic - manhattanDistance 
-	still wrong need modification
+    Second heuristic - distance of wrong tiles to their
+    right position. After a little bit of scheming, came
+    the mathematical conclusion that:
+    x = n-1 %3
+    y = n-1 /3
+    which concluded into the following result.
     '''
     def manhattanDistance(self):
         result = 0
