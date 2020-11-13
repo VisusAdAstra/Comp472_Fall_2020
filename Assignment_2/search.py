@@ -67,10 +67,10 @@ class Search:
                     leaves.put(succ.get())
 
     '''
-    Greedy Search Algorithm - Based in the pseudo code
+    Greedy Best First Search Algorithm - Based in the pseudo code
     in "Artificial Intelligence: A Modern Approach - 3rd Edition"
     '''
-    def greedy(self, heuristic):
+    def greedyBFS(self, heuristic):
         actual = self.start
         leaves = PriorityQueue()
         leaves.put((actual.costHeur(heuristic), actual))
@@ -92,7 +92,7 @@ class Search:
     A* Search Algorithm - Based in the pseudo code
     in "Artificial Intelligence: A Modern Approach - 3rd Edition"
     '''
-    def aSearch(self, heuristic):
+    def aStar(self, heuristic):
         actual = self.start
         leaves = PriorityQueue()
         leaves.put((actual.costHeur(heuristic), actual))

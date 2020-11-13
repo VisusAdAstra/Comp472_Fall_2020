@@ -2,6 +2,10 @@ import sys
 from queue import Queue
 from copy import deepcopy
 
+# ref: https://www.redblobgames.com/pathfinding/a-star/implementation.html
+# https://github.com/mragankyadav/8-Puzzle-Solver
+# https://github.com/rmssoares/8Puzzle-StateSpaceSearches
+
 
 class Node:
     '''
@@ -19,9 +23,12 @@ class Node:
             self.depth = 0
             self.moves = move
         else:
-            self.depth = parent.depth+1
+            self.depth = parent.depth + 1
             self.moves = parent.moves + move
-    
+
+    '''
+    Implement equality for queue.
+    '''
     def __lt__(self, other):
         return self.hn < other.hn
 
@@ -48,51 +55,67 @@ class Node:
     '''
     def costHeur(self, heuristic):
         if heuristic is 0:
-            return self.nWrongTiles()
+            return self.hammingDistance()
         else:
             self.hn = self.manhattanDistance()
             return self.hn
 
     '''
-    First heuristic - number of wrong tiles
+    First heuristic - hammingDistance
     Every time there's a tile in the wrong place, we
-    add 1 to the result. Heavily inspired in the
-    puzzle.checkPuzzle() loop.
+    add 1 to the result. Do not count zero to maintain admissible
     '''
-    def nWrongTiles(self):
-        result = 0
+    def hammingDistance(self):
+        result = [0, 0]
         count = 1
-        for i in range(0,self.state.row):
-            for j in range(0,self.state.col):
-                if self.state.puzzle[i][j]!=(count%(self.state.row*self.state.col)):
-                    result += 1
-                count+=1
-        return result
+        for i in range(0, self.state.row):
+            for j in range(0, self.state.col):
+                if self.state.zero != (i, j) and self.state.puzzle[i][j] != (count % (self.state.row*self.state.col)):
+                    result[0] += 1
+                count += 1
+        count = 1
+        for j in range(0, self.state.col):
+            for i in range(0, self.state.row):
+                if self.state.zero != (i, j) and self.state.puzzle[i][j] != (count % (self.state.row*self.state.col)):
+                    result[1] += 1
+                count += 1
+        if result[0] < result[1]:
+            return result[0]
+        else:
+            return result[1]
 
     '''
-    Second heuristic - distance of wrong tiles to their
-    right position. After a little bit of scheming, came
-    the mathematical conclusion that:
-    x = n-1 %3
-    y = n-1 /3
-    which concluded into the following result.
+    Second heuristic - manhattanDistance
+    Distance of wrong tiles to their correct position. 
+    r = n-1 / col
+    c = n-1 % col
+    r = n-1 % row
+    c = n-1 / row
     '''
     def manhattanDistance(self):
-        result = 0
-        count = 1
-        for i in range(0,self.state.row):
-            for j in range(0,self.state.col):
+        result = [0, 0]
+        distance = [0, 0]
+        for i in range(0, self.state.row):
+            for j in range(0, self.state.col):
                 index = self.state.puzzle[i][j] - 1
-                distance = (2-i)+(2-j) if index == -1 else abs(i-(index/self.state.row))+abs(j-(index%self.state.col))
-                result += distance
-                count+=1
-        return result
-    
+                if index == -1:
+                    distance[0] = (self.state.row-1-i)+(self.state.col-1-j)
+                    distance[1] = (self.state.row-1-i)+(self.state.col-1-j)
+                else:
+                    distance[0] = abs(i-(index//self.state.col)) + \
+                        abs(j-(index % self.state.col))
+                    distance[1] = abs(i-(index % self.state.row)) + \
+                        abs(j-(index//self.state.row))
+                result[0] += distance[0]
+                result[1] += distance[1]
+        if result[0] < result[1]:
+            return result[0]
+        else:
+            return result[1]
+
     '''
     When printing the node, we obtain the moves from the
     starting state to this specific one.
     '''
     def __str__(self):
         return str(self.moves)
-
-
