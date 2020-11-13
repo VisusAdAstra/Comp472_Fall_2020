@@ -55,24 +55,23 @@ def importData(file_name):
     return data
 
 inputData = importData('C:\\Users\\Chun\\Documents\\Comp472_Fall_2020\\Assignment_2\\samplePuzzles.txt')
-#print(inputData)
-
+print(inputData)
 
 # In[253]:
-
 
 f=search2.Search2()
 f.uniform_cost_search([2, 6, 3, 4, 5, 7, 0, 1], 2, 4, [1, 2, 3, 4, 5, 6, 7, 0])
 
-t=xpuzzle.XPuzzle(2, 4)
-t.initialize(inputData[1])#inputData[0] no solution
+t=xpuzzle.XPuzzle(2, 4, inputData[3]) #inputData[0] no solution
+t.doMove("C")
 t.printPuzzle()
-s=search.Search(t)
 
-p = s.greedy(0)
+s=search.Search(t)
+p = s.bestFirst()
 p.state.printPuzzle()
-p = s.aSearch(0)
+p = s.aStar(1)
 p.state.printPuzzle()
+p.state.manhattanDistance()
 
 
 # In[ ]:
