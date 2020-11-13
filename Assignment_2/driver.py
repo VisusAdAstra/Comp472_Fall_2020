@@ -53,8 +53,8 @@ def importData(file_name):
     board_len = len(data[0])
     board_side = int(board_len ** 0.5)
     return data
-
-inputData = importData('C:\\Users\\Chun\\Documents\\Comp472_Fall_2020\\Assignment_2\\samplePuzzles.txt')
+#C:\\Users\\Chun\\Documents\\Comp472_Fall_2020\\Assignment_2\\samplePuzzles.txt
+inputData = importData('samplePuzzles.txt')
 print(inputData)
 
 # In[253]:

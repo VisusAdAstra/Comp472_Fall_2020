@@ -17,21 +17,12 @@ class Search:
         self.start = node.Node(puzzle)
 
 
-
-    '''
-    Uniform Cost Search - Based in the pseudo code
-    in "Artificial Intelligence: A moddern approach - 3rd Edition"
-    '''
-
-        
-
     '''
 
     Greedy Search Algorithm - Based in the pseudo code
     in "Artificial Intelligence: A Modern Approach - 3rd Edition"
     '''
     def greedy(self, heuristic):
-        print(self)
         actual = self.start
         leaves = PriorityQueue()
         leaves.put((actual.costHeur(heuristic), actual))
