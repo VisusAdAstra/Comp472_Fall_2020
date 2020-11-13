@@ -2,6 +2,7 @@ import sys
 from queue import Queue
 from queue import LifoQueue
 from queue import PriorityQueue
+import time
 import importlib
 import xpuzzle
 importlib.reload(xpuzzle)
@@ -15,19 +16,22 @@ class Search:
     '''
     def __init__(self, puzzle):
         self.start = node.Node(puzzle)
+        self.limit = 60
 
 
     '''
-
-    Greedy Search Algorithm - Based in the pseudo code
+    Greedy Best First Search Algorithm - Based in the pseudo code
     in "Artificial Intelligence: A Modern Approach - 3rd Edition"
     '''
-    def greedy(self, heuristic):
+    def greedyBFS(self, heuristic):
         actual = self.start
         leaves = PriorityQueue()
         leaves.put((actual.costHeur(heuristic), actual))
         closed = list()
+        start_time = time.time()
         while True:
+            if (time.time() - start_time > self.limit):
+                return ("no solution", "no solution")
             if leaves.empty():
                 return None
             actual = leaves.get()[1]
@@ -49,7 +53,10 @@ class Search:
         leaves = PriorityQueue()
         leaves.put((actual.costHeur(heuristic), actual))
         closed = list()
+        start_time = time.time()
         while True:
+            if (time.time() - start_time > self.limit):
+                return ("no solution", "no solution")
             if leaves.empty():
                 return None
             actual = leaves.get()[1]
@@ -60,6 +67,5 @@ class Search:
                 succ = actual.succ()
                 while not succ.empty():
                     child = succ.get()
-                    leaves.put((child.costHeur(heuristic)+child.depth, child))
+                    leaves.put((child.costHeur(heuristic)+child.gn, child))
 
-                    

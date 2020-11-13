@@ -14,16 +14,23 @@ class Node:
     def __init__(self, puzzle, parent=None, move=""):
         self.state = puzzle
         self.parent = parent
-        self.depth = 0
         self.gn = 0
         self.hn = 0
         if parent is None:
-            self.depth = 0
+            self.gn = 0
             self.moves = move
         else:
-            self.depth = parent.depth + 1
+            temp = 1
+            if move=="W":
+                temp = 2
+            if move=="C":
+                temp = 3
+            self.gn = parent.gn + temp
             self.moves = parent.moves + move
-    
+
+    '''
+    Implement equality for queue.
+    '''
     def __lt__(self, other):
         return self.hn < other.hn
 
@@ -63,17 +70,17 @@ class Node:
     def hammingDistance(self):
         result = [0, 0]
         count = 1
-        for i in range(0,self.state.row):
-            for j in range(0,self.state.col):
-                if self.state.zero != (i, j) and self.state.puzzle[i][j]!=(count%(self.state.row*self.state.col)):
+        for i in range(0, self.state.row):
+            for j in range(0, self.state.col):
+                if self.state.zero != (i, j) and self.state.puzzle[i][j] != (count % (self.state.row*self.state.col)):
                     result[0] += 1
-                count+=1
+                count += 1
         count = 1
-        for j in range(0,self.state.col):
-            for i in range(0,self.state.row):
-                if self.state.zero != (i, j) and self.state.puzzle[i][j]!=(count%(self.state.row*self.state.col)):
+        for j in range(0, self.state.col):
+            for i in range(0, self.state.row):
+                if self.state.zero != (i, j) and self.state.puzzle[i][j] != (count % (self.state.row*self.state.col)):
                     result[1] += 1
-                count+=1
+                count += 1
         if result[0] < result[1]:
             return result[0]
         else:
@@ -107,7 +114,14 @@ class Node:
             return result[0]
         else:
             return result[1]
-    
+
+    '''
+    obtain the moves from the
+    starting state to this specific one.
+    '''
+    def record(self):
+        return str(self.moves)
+
     '''
     When printing the node, we obtain the moves from the
     starting state to this specific one.
