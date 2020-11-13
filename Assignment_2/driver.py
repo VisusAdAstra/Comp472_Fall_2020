@@ -6,11 +6,6 @@
 
 import pandas as pd
 import numpy as np
-import matplotlib as mpl
-import matplotlib.pyplot as plt
-import sklearn
-import sklearn.preprocessing         # For scale function
-import sklearn.metrics as metrics    # For for label size
 
 
 # In[247]:
@@ -21,6 +16,8 @@ import importlib
 import xpuzzle
 importlib.reload(xpuzzle)
 import search
+import search2
+importlib.reload(search2)
 importlib.reload(search)
 inputData = np.array([])
 goalState=np.array([[1,2,3,4], [5,6,7,0]])
@@ -57,12 +54,15 @@ def importData(file_name):
     board_side = int(board_len ** 0.5)
     return data
 
-inputData = importData('samplePuzzles.txt')
-print(inputData)
+inputData = importData('C:\\Users\\Chun\\Documents\\Comp472_Fall_2020\\Assignment_2\\samplePuzzles.txt')
+#print(inputData)
 
 
 # In[253]:
 
+
+f=search2.Search2()
+f.uniform_cost_search([2, 6, 3, 4, 5, 7, 0, 1], 2, 4, [1, 2, 3, 4, 5, 6, 7, 0])
 
 t=xpuzzle.XPuzzle(2, 4)
 t.initialize(inputData[1])#inputData[0] no solution
