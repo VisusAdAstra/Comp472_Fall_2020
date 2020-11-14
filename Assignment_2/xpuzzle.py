@@ -11,8 +11,7 @@ class XPuzzle:
 		self.col=col
 		self.puzzle=[]
 		self.zero=(0,0)
-		self.moves=["U","D","L","R","W","C"]
-		self.costs=[1, 1, 1, 1, 2, 3]
+		self.moves={"U":1,"D":1,"L":1,"R":1,"C":3}
 		for i in range(0, self.row):
 			self.puzzle.append([])
 			for j in range(0, self.col):
@@ -64,52 +63,52 @@ class XPuzzle:
 		self.puzzle[x1][y1]=self.puzzle[x2][y2]
 		self.puzzle[x2][y2]=temp
 
+	# X,Y,Z,T is wrapping move with up,down,left,right direction
 	def up(self):
 		if (self.zero[0]!=0):
 			self.swap((self.zero[0]-1,self.zero[1]),self.zero)
 			self.zero=(self.zero[0]-1,self.zero[1])
-			return 1
+			return "U"
 		else:
 			self.swap((self.row-1,self.zero[1]),self.zero)
 			self.zero=(self.row-1,self.zero[1])
-			return 2
+			return "X"
 
 	def down(self):
 		if (self.zero[0]!=self.row-1):
 			self.swap((self.zero[0]+1,self.zero[1]),self.zero)
 			self.zero=(self.zero[0]+1,self.zero[1])
-			return 1
+			return "D"
 		else:
 			self.swap((0,self.zero[1]),self.zero)
 			self.zero=(0,self.zero[1])
-			return 2
+			return "Y"
 
 	def left(self):
 		if (self.zero[1]!=0):
 			self.swap((self.zero[0],self.zero[1]-1),self.zero)
 			self.zero=(self.zero[0],self.zero[1]-1)
-			return 1
+			return "L"
 		else:
 			self.swap((self.zero[0],self.col-1),self.zero)
 			self.zero=(self.zero[0],self.col-1)
-			return 2
+			return "Z"
 
 	def right(self):
 		if (self.zero[1]!=self.col-1):
 			self.swap((self.zero[0],self.zero[1]+1),self.zero)
 			self.zero=(self.zero[0],self.zero[1]+1)
-			return 1
+			return "R"
 		else:
 			self.swap((self.zero[0],0),self.zero)
 			self.zero=(self.zero[0],0)
-			return 2
-
+			return "T"
+			
 	def corner(self):
 		x = abs(self.row-1 - self.zero[0])
 		y = abs(self.col-1 - self.zero[1])
 		self.swap((x,y),self.zero)
 		self.zero=(x,y)
-		return 3
 	
 	def printPuzzle(self):
 		for i in range(0,self.row):
@@ -119,15 +118,16 @@ class XPuzzle:
 		print("")
 
 	def doMove(self,move):
-		if move=="U":
-			self.up()
-		if move=="D":
-			self.down()
-		if move=="L":
-			self.left()
-		if move=="R":
-			self.right()
+		if move=="U" or move=="X":
+			return self.up()
+		if move=="D" or move=="Y":
+			return self.down()
+		if move=="L" or move=="Z":
+			return self.left()
+		if move=="R" or move=="T":
+			return self.right()
 		if move=="C":
 			if self.zero == (0, 0) or self.zero == (0, self.col-1) or self.zero == (self.row-1, 0) or self.zero == (self.row-1, self.col-1):
 				self.corner()
+			return "C"
 	

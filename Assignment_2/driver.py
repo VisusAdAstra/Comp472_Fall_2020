@@ -6,6 +6,7 @@
 
 import pandas as pd
 import numpy as np
+from copy import deepcopy
 
 
 # In[247]:
@@ -14,6 +15,8 @@ import numpy as np
 #global data
 import importlib
 import xpuzzle
+import node
+importlib.reload(node)
 importlib.reload(xpuzzle)
 import search
 import search2
@@ -27,18 +30,16 @@ goalState=np.array([[1,2,3,4], [5,6,7,0]])
 
 
 #i/o
-def exportData(frontier, time):
+def exportData(name, index, data):
+    cost = 0
+    file = open(f"{index}_" + name + '_solution.txt', 'w')
+    for ele in data[0].solution:
+        file.write(ele)
+    file.close()
 
-    moves = 1
-    file = open('output.txt', 'w')
-    file.write("path_to_goal: " + str(moves))
-    file.write("\ncost_of_path: " + str(len(moves)))
-    file.write("\nnodes_expanded: " + str(nodes_expanded))
-    file.write("\nfringe_size: " + str(len(frontier)))
-    file.write("\nmax_fringe_size: " + str(max_frontier_size))
-    file.write("\nsearch_depth: " + str(goal_node.depth))
-    file.write("\nmax_search_depth: " + str(max_search_depth))
-    file.write("\nrunning_time: " + format(time, '.8f'))
+    file = open(f"{index}_" + name + '_search.txt', 'w')
+    for ele in data[1]:
+        file.write(ele)
     file.close()
 
 
@@ -75,7 +76,17 @@ p.state.manhattanDistance()
 
 
 # In[ ]:
+# driver for A* and GBFS test
+t=xpuzzle.XPuzzle(2, 4, inputData[3]) #inputData[0] no solution
+t.printPuzzle()
 
+s=search.Search(t)
 
-
-
+print("A*")
+p  = s.aStar(0)
+p[0].getSolution(deepcopy(t))
+print(p[0])
+if isinstance(p, node.Node):
+    exportData("astar", 0, p)
+else:
+    exportData("astar", 0, p)
