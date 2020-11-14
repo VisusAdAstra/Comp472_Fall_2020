@@ -20,6 +20,32 @@ class Search:
         self.org = deepcopy(puzzle)
         self.limit = 60
 
+    '''
+    Best First Search Algorithm - Based in the pseudo code
+    in "Artificial Intelligence: A Modern Approach - 3rd Edition"
+    '''
+    def bestFirst(self):
+        search_path = []
+        closed = list()
+        leaves = Queue()
+        leaves.put(self.start)
+        start_time = time.time()
+        while True:
+            if (time.time() - start_time > self.limit):
+                return ("no solution", "no solution", self.limit)
+            if leaves.empty():
+                return None
+            actual = leaves.get()
+            search_path.append(f"{actual.gn} {actual.gn} {0} | {str(actual.state)}\n")
+            if actual.goalState():
+                actual.getSolution(self.org)
+                return (actual, search_path, time.time() - start_time)
+            elif actual.state.puzzle not in closed:
+                closed.append(actual.state.puzzle)
+                succ = actual.succ()
+                while not succ.empty():
+                    leaves.put(succ.get())
+    
 
     '''
     Greedy Best First Search Algorithm - Based in the pseudo code
