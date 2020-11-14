@@ -16,21 +16,26 @@ class Node:
     def __init__(self, puzzle, parent=None, move=""):
         self.state = puzzle
         self.parent = parent
-        self.depth = 0
         self.gn = 0
         self.hn = 0
+        self.solution = []
         if parent is None:
-            self.depth = 0
+            self.gn = 0
             self.moves = move
         else:
-            self.depth = parent.depth + 1
+            temp = 1
+            if move=="X" or move=="Y" or move=="Z" or move=="T":
+                temp = 2
+            if move=="C":
+                temp = 3
+            self.gn = parent.gn + temp
             self.moves = parent.moves + move
 
     '''
     Implement equality for queue.
     '''
     def __lt__(self, other):
-        return self.hn < other.hn
+        return self.gn < other.gn
 
     '''
     Checks if the Node's state is a goal state.
@@ -45,7 +50,7 @@ class Node:
         succs = Queue()
         for m in self.state.moves:
             p = deepcopy(self.state)
-            p.doMove(m)
+            m = p.doMove(m)
             if p.zero is not self.state.zero:
                 succs.put(Node(p, self, m))
         return succs
@@ -112,6 +117,17 @@ class Node:
             return result[0]
         else:
             return result[1]
+
+    def getSolution(self, p):
+        self.solution = []
+        self.solution.append(f"0 0 | {str(p)}\n")
+        arr = {"U":1,"D":1,"L":1,"R":1,"X":2,"Y":2,"Z":2,"T":2,"C":3}
+        cost = 0
+        for m in self.moves:
+            pre = p.zero
+            p.doMove(m)
+            cost += arr[m]
+            self.solution.append(f"{p.puzzle[pre[0]][pre[1]]} {cost} | {str(p)}\n")
 
     '''
     When printing the node, we obtain the moves from the

@@ -2,6 +2,7 @@ import sys
 from queue import Queue
 from queue import LifoQueue
 from queue import PriorityQueue
+import time
 import importlib
 import xpuzzle
 importlib.reload(xpuzzle)
@@ -15,6 +16,7 @@ class Search:
     '''
     def __init__(self, puzzle):
         self.start = node.Node(puzzle)
+        self.limit = 10
 
     '''
     Best First Search Algorithm - Based in the pseudo code
@@ -24,7 +26,10 @@ class Search:
         closed = list()
         leaves = Queue()
         leaves.put(self.start)
+        start_time = time.time()
         while True:
+            if (time.time() - start_time > self.limit):
+                return ("no solution", "no solution")
             if leaves.empty():
                 return None
             actual = leaves.get()
@@ -61,7 +66,7 @@ class Search:
             actual = leaves.get()
             if actual.goalState():
                 return actual
-            elif actual.depth is not depth:
+            elif actual.gn is not depth:
                 succ = actual.succ()
                 while not succ.empty():
                     leaves.put(succ.get())
@@ -71,16 +76,21 @@ class Search:
     in "Artificial Intelligence: A Modern Approach - 3rd Edition"
     '''
     def greedyBFS(self, heuristic):
+        search_path = []
         actual = self.start
         leaves = PriorityQueue()
         leaves.put((actual.costHeur(heuristic), actual))
         closed = list()
+        start_time = time.time()
         while True:
+            if (time.time() - start_time > self.limit):
+                return ("no solution", "no solution")
             if leaves.empty():
                 return None
             actual = leaves.get()[1]
+            search_path.append(f"{0 + actual.costHeur(heuristic)} {0} {actual.costHeur(heuristic)} | {str(actual.state)}\n")
             if actual.goalState():
-                return actual
+                return (actual, search_path, time.time() - start_time)
             elif actual.state.puzzle not in closed:
                 closed.append(actual.state.puzzle)
                 succ = actual.succ()
@@ -93,21 +103,26 @@ class Search:
     in "Artificial Intelligence: A Modern Approach - 3rd Edition"
     '''
     def aStar(self, heuristic):
+        search_path = []
         actual = self.start
         leaves = PriorityQueue()
         leaves.put((actual.costHeur(heuristic), actual))
         closed = list()
+        start_time = time.time()
         while True:
+            if (time.time() - start_time > self.limit):
+                return ("no solution", "no solution")
             if leaves.empty():
                 return None
             actual = leaves.get()[1]
+            search_path.append(f"{actual.gn + actual.costHeur(heuristic)} {actual.gn} {actual.costHeur(heuristic)} | {str(actual.state)}\n")
             if actual.goalState():
-                return actual
+                return (actual, search_path, time.time() - start_time)
             elif actual.state.puzzle not in closed:
                 closed.append(actual.state.puzzle)
                 succ = actual.succ()
                 while not succ.empty():
                     child = succ.get()
-                    leaves.put((child.costHeur(heuristic)+child.depth, child))
+                    leaves.put((child.costHeur(heuristic)+child.gn, child))
 
                     
