@@ -6,7 +6,6 @@
 
 import pandas as pd
 import numpy as np
-from copy import deepcopy
 
 
 # In[247]:
@@ -30,6 +29,16 @@ goalState=np.array([[1,2,3,4], [5,6,7,0]])
 
 
 #i/o
+def noSolution(name, index, data):
+    file = open(f"{index}_" + name + '_solution.txt', 'w')
+    file.write(data[0])
+    file.close()
+
+    file = open(f"{index}_" + name + '_search.txt', 'w')
+    file.write(data[1])
+    file.close()
+
+
 def exportData(name, index, data):
     cost = 0
     file = open(f"{index}_" + name + '_solution.txt', 'w')
@@ -79,14 +88,22 @@ p.state.manhattanDistance()
 # driver for A* and GBFS test
 t=xpuzzle.XPuzzle(2, 4, inputData[3]) #inputData[0] no solution
 t.printPuzzle()
-
 s=search.Search(t)
 
 print("A*")
-p  = s.aStar(0)
-p[0].getSolution(deepcopy(t))
+p  = s.aStar(1)
 print(p[0])
-if isinstance(p, node.Node):
-    exportData("astar", 0, p)
+
+if isinstance(p[0], node.Node):
+    exportData("astar", 1, p)
 else:
-    exportData("astar", 0, p)
+    noSolution("astar", 1, p)
+
+print("GBFS")
+p = s.greedyBFS(0)
+print(p[0])
+
+if isinstance(p[0], node.Node):
+    exportData("gbfs", 0, p)
+else:
+    noSolution("gbfs", 0, p)
