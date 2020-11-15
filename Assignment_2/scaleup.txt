@@ -1,0 +1,42 @@
+# stat2
+sample[row, col] time(s)
+***		sample [2, 2]		***
+LC time: 0.000997781753540039
+***		sample [2, 3]		***
+UTDRULC time: 0.02499556541442871
+***		sample [2, 4]		***
+UZLDRTRRR time: 0.011995553970336914
+***		sample [2, 5]		***
+RCRDRRRTRRULDLCLDR time: 3.3487300872802734
+***		sample [2, 6]		***
+LDLLLULZDLLLLURDLULDCD time: 3.09175705909729
+***		sample [2, 7]		***
+no solution time: 120
+***		sample [3, 2]		***
+DRUUCURD time: 0.035003662109375
+***		sample [3, 3]		***
+DDLLUZULXLZ time: 0.09196639060974121
+***		sample [3, 4]		***
+ULURDLLUCUTDRRURUX time: 0.13895511627197266
+***		sample [3, 5]		***
+no solution time: 120
+***		sample [3, 6]		***
+no solution time: 120
+***		sample [3, 7]		***
+no solution time: 120
+***		sample [4, 2]		***
+DDRULDCX time: 0.013597249984741211
+***		sample [4, 3]		***
+DRULDLDDZCXRUULURDRDD time: 31.63061285018921
+***		sample [4, 4]		***
+no solution time: 120
+***		sample [4, 5]		***
+no solution time: 120
+***		sample [4, 6]		***
+no solution time: 120
+***		sample [4, 7]		***
+no solution time: 120
+***		sample [5, 2]		***
+DRULDDDRDYDLDRUULDDDRD time: 3.0356969833374023
+***		sample [5, 3]		***
+no solution time: 120
