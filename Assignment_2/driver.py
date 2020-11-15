@@ -29,6 +29,10 @@ goalState=np.array([[1,2,3,4], [5,6,7,0]])
 
 
 #i/o
+#distance = (2-i)+(2-j) if index == -1 else abs(i-(index/self.state.size))+abs(j-(index%self.state.size))
+# file.write("\ncost: " + str(moves))
+# file.write("\nrunning_time: " + format(time, '.8f'))
+
 def exportData(name, index, data, heu=-1):
     subname = "-h" + str(heu) if heu > -1 else ""
     solution = f"output/{index}_{name}{subname}" + '_solution.txt'
@@ -52,12 +56,69 @@ def importData(file_name):
     file = open(file_name, 'r')
     for line in file:
         data.append([int(x) for x in line.split(" ")])
-        
+
     data = np.array(data)
     board_len = len(data[0])
     board_side = int(board_len ** 0.5)
     return data
-#C:\\Users\\Chun\\Documents\\Comp472_Fall_2020\\Assignment_2\\samplePuzzles.txt
+
+#sample
+def generateInput(total, length=8):
+    input = []
+    for i in range(total):
+        input.append(list(np.random.permutation(length)))
+    return input
+
+#analysis
+def analysis():
+    N = 50
+    input = generateInput(N)
+    ucs_stat = np.zeros(5)
+    gbfs0_stat = np.zeros(5)
+    gbfs1_stat = np.zeros(5)
+    star0_stat = np.zeros(5)
+    star1_stat = np.zeros(5)
+    for index, e in enumerate(input):
+        print(f"***\t\tsample {index}\t\t***")
+        t=xpuzzle.XPuzzle(2, 4, input[index]) 
+        s=search.Search(t, 15)
+
+        p = s.uniformCost()
+        print(p[0])
+        if isinstance(p[0], node.Node):
+            ucs_stat+=np.array([len(p[0].solution), len(p[1]), p[0].gn, p[2], 1/N])
+        p = s.greedyBFS(0)
+        if isinstance(p[0], node.Node):
+            gbfs0_stat+=np.array([len(p[0].solution), len(p[1]), p[0].gn, p[2], 1/N])
+        p = s.greedyBFS(1)
+        if isinstance(p[0], node.Node):
+            gbfs1_stat+=np.array([len(p[0].solution), len(p[1]), p[0].gn, p[2], 1/N])
+        p  = s.aStar(0)
+        if isinstance(p[0], node.Node):
+            star0_stat+=np.array([len(p[0].solution), len(p[1]), p[0].gn, p[2], 1/N])
+        p  = s.aStar(1)
+        if isinstance(p[0], node.Node):
+            star1_stat+=np.array([len(p[0].solution), len(p[1]), p[0].gn, p[2], 1/N])
+    return np.array([ucs_stat, gbfs0_stat, gbfs1_stat, star0_stat, star1_stat])
+
+#scaleup
+def scaleup(row, col):
+    N = 1
+    star1_stat = []
+    for r in range(1, row):
+        for c in range(3, col):
+            print(f"***\t\tsample [{r}, {c}]\t\t***")
+            input = generateInput(N, r*c)
+            t=xpuzzle.XPuzzle(r, c, input[0]) 
+            s=search.Search(t, 120)
+
+            p  = s.aStar(1)
+            print(f"{p[0]} time: {p[2]}")
+            if isinstance(p[0], node.Node):
+                star1_stat.append([r, c, p[2]])
+            else:
+                star1_stat.append([r, c, -1])   
+    return star1_stat
 
 #main
 def process(input):
@@ -66,7 +127,7 @@ def process(input):
         t=xpuzzle.XPuzzle(2, 4, input[index]) 
         s=search.Search(t)
 
-        p = s.bestFirst()
+        p = s.uniformCost()
         print(p[0])
         exportData("ucs", index, p)
 
@@ -101,7 +162,6 @@ p.state.manhattanDistance()
 
 # In[ ]:
 # driver for A* and GBFS test
-# inputData[4] no solution
 inputData = importData('samplePuzzles.txt')
 print(inputData, end='\n\n')
 
@@ -116,9 +176,19 @@ for heuristic in range(2):
     print(p[0])
     exportData("astar", index, p, heuristic)
 
+# In[ ]:
 # process driver
 inputData = importData('samplePuzzles.txt')
 print(inputData, end='\n\n')
 process(inputData)
 
+# In[ ]:
+# analysis
+stat1 = analysis()
+print(stat1)
+
+# In[ ]:
+# scaleup
+stat2 = scaleup(6, 8)
+print(stat2)
 

@@ -15,27 +15,28 @@ class Search:
     '''
     Instantiates the class, defining the start node
     '''
-    def __init__(self, puzzle):
+    def __init__(self, puzzle, limit=60):
         self.start = node.Node(puzzle)
         self.org = deepcopy(puzzle)
-        self.limit = 60
+        self.limit = limit
 
     '''
-    Best First Search Algorithm - Based in the pseudo code
+    Uniform Cost Search Algorithm - Based in the pseudo code
     in "Artificial Intelligence: A Modern Approach - 3rd Edition"
     '''
-    def bestFirst(self):
+    def uniformCost(self):
         search_path = []
+        actual = self.start
+        leaves = PriorityQueue()
+        leaves.put((0, actual))
         closed = list()
-        leaves = Queue()
-        leaves.put(self.start)
         start_time = time.time()
         while True:
-            if (time.time() - start_time > self.limit):
-                return ("no solution", "no solution", self.limit)
+            if (time.time() - start_time > self.limit*2):
+                return ("no solution", "no solution", self.limit*2)
             if leaves.empty():
                 return None
-            actual = leaves.get()
+            actual = leaves.get()[1]
             search_path.append(f"{actual.gn} {actual.gn} {0} | {str(actual.state)}\n")
             if actual.goalState():
                 actual.getSolution(self.org)
@@ -44,8 +45,8 @@ class Search:
                 closed.append(actual.state.puzzle)
                 succ = actual.succ()
                 while not succ.empty():
-                    leaves.put(succ.get())
-    
+                    child = succ.get()
+                    leaves.put((child.gn, child))        
 
     '''
     Greedy Best First Search Algorithm - Based in the pseudo code
