@@ -29,10 +29,6 @@ goalState=np.array([[1,2,3,4], [5,6,7,0]])
 
 
 #i/o
-#distance = (2-i)+(2-j) if index == -1 else abs(i-(index/self.state.size))+abs(j-(index%self.state.size))
-# file.write("\ncost: " + str(moves))
-# file.write("\nrunning_time: " + format(time, '.8f'))
-
 def exportData(name, index, data, heu=-1):
     subname = "-h" + str(heu) if heu > -1 else ""
     solution = f"output/{index}_{name}{subname}" + '_solution.txt'
@@ -105,19 +101,19 @@ def analysis():
 def scaleup(row, col):
     N = 1
     star1_stat = []
-    for r in range(1, row):
-        for c in range(3, col):
+    for r in range(2, row):
+        for c in range(2, col):
             print(f"***\t\tsample [{r}, {c}]\t\t***")
             input = generateInput(N, r*c)
             t=xpuzzle.XPuzzle(r, c, input[0]) 
-            s=search.Search(t, 120)
+            s=search.Search(t, 120*(r*c/10))
 
             p  = s.aStar(1)
             print(f"{p[0]} time: {p[2]}")
             if isinstance(p[0], node.Node):
                 star1_stat.append([r, c, p[2]])
             else:
-                star1_stat.append([r, c, -1])   
+                star1_stat.append([r, c, -1])
     return star1_stat
 
 #main
