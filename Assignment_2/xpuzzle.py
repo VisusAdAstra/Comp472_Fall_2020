@@ -131,3 +131,19 @@ class XPuzzle:
 				self.corner()
 			return "C"
 	
+	def permute(self,numPerm):
+		for i in range(0,numPerm):
+			self.doMove(self.moves[randint(0,3)])
+	
+	def parseMoveSequence(self,string):
+		for m in string:
+			self.doMove(m)
+			self.printPuzzle()
+
+	def __str__(self):
+		result = ""
+		for i in range(0,self.row):
+			for j in range(0,self.col):
+				result += (str(self.puzzle[i][j]) + " ")
+		return str(result)
+
