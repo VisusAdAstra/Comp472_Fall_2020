@@ -1,4 +1,5 @@
 # stat1
+
 total of 50:
  length solution length search  cost-g(n)      time(s)         %found solution
 [[3.52000000e+02 3.83581000e+05 3.91000000e+02 2.77701256e+02  6.40000000e-01]		ucs
@@ -9,4 +10,6 @@ total of 50:
  
  average/50:
  ......
+ 
+ 
  
