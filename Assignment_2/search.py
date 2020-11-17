@@ -32,8 +32,8 @@ class Search:
         closed = list()
         start_time = time.time()
         while True:
-            if (time.time() - start_time > self.limit*2):
-                return ("no solution", "no solution", self.limit*2)
+            if ((time.time() - start_time) > self.limit):
+                return ("no solution", "no solution", self.limit)
             if leaves.empty():
                 return None
             actual = leaves.get()[1]
@@ -60,7 +60,7 @@ class Search:
         closed = list()
         start_time = time.time()
         while True:
-            if (time.time() - start_time > self.limit):
+            if ((time.time() - start_time) > self.limit):
                 return ("no solution", "no solution", self.limit)
             if leaves.empty():
                 return None
@@ -88,7 +88,7 @@ class Search:
         closed = list()
         start_time = time.time()
         while True:
-            if (time.time() - start_time > self.limit):
+            if ((time.time() - start_time) > self.limit):
                 return ("no solution", "no solution", self.limit)
             if leaves.empty():
                 return None
