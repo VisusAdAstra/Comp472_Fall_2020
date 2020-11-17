@@ -141,8 +141,8 @@ print(inputData)
 
 # In[253]:
 
-f=search2.Search2()
-f.uniform_cost_search([2, 6, 3, 4, 5, 7, 0, 1], 2, 4, [1, 2, 3, 4, 5, 6, 7, 0])
+#f=search2.Search2()
+#f.uniform_cost_search([2, 6, 3, 4, 5, 7, 0, 1], 2, 4, [1, 2, 3, 4, 5, 6, 7, 0])
 
 t=xpuzzle.XPuzzle(2, 4, inputData[3]) #inputData[0] no solution
 t.doMove("C")
