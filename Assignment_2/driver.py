@@ -15,6 +15,7 @@ import numpy as np
 import importlib
 import xpuzzle
 import node
+import os
 importlib.reload(node)
 importlib.reload(xpuzzle)
 import search
@@ -22,6 +23,7 @@ import search2
 importlib.reload(search2)
 importlib.reload(search)
 inputData = np.array([])
+import fnmatch
 goalState=np.array([[1,2,3,4], [5,6,7,0]])
 
 
@@ -135,6 +137,62 @@ def process(input):
             p  = s.aStar(heuristic)
             print(p[0])
             exportData("astar", index, p, heuristic)
+
+
+def getTotalLineCount(directory):
+    #Count the number of lines for each text file
+    #https://www.geeksforgeeks.org/count-number-of-lines-in-a-text-file-in-python/
+    totalLineCount = 0
+    for filename in os.listdir(directory):
+        # Opening a file 
+        file = open(directory + filename,"r") 
+        Counter = 0
+        
+        # Reading from file 
+        Content = file.read() 
+        CoList = Content.split("\n") 
+        
+        for i in CoList: 
+            if i: 
+                Counter += 1
+        if(Counter > 1):  
+            totalLineCount += Counter
+        file.close()
+    print('Total line count across all files, excluding no solution')
+    print(totalLineCount)
+    print('Average line per file')
+    print(totalLineCount/50)
+
+def getTotalTimeAndTotalNoSolution(directory, matchingString):
+    #Get the last line of each text file to get the total time
+    totalTime = 0
+    totalNoSolution = 0
+    for filename in os.listdir(directory):
+        # Opening a file 
+        if fnmatch.fnmatch(filename, matchingString):
+            with open(directory + filename, "r") as f1:
+                last_line = f1.readlines()[-1]
+                result = last_line.rpartition(' ')[-1]
+                try:
+                    m = float(result)
+                    totalTime += m
+                except:
+                    totalNoSolution += 1
+    print('Total execution time')
+    print (totalTime)   
+    print('Average execution time (excluding no solution)')
+    print(totalTime/60)
+    print('Total no solution count')
+    print(totalNoSolution)     
+                
+
+
+directory = 'C:/Users/Chun/Documents/Comp472_Fall_2020/Assignment_2/output/'
+filenameMatchString = '*solution.txt'
+getTotalLineCount(directory)
+getTotalTimeAndTotalNoSolution(directory, filenameMatchString)
+
+
 
 inputData = importData('samplePuzzles.txt')
 print(inputData)
