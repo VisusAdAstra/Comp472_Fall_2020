@@ -15,7 +15,7 @@ class Search:
     '''
     Instantiates the class, defining the start node
     '''
-    def __init__(self, puzzle, limit=60):
+    def __init__(self, puzzle, limit=120):
         self.start = node.Node(puzzle)
         self.org = deepcopy(puzzle)
         self.limit = limit

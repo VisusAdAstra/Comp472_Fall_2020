@@ -33,8 +33,8 @@ goalState=np.array([[1,2,3,4], [5,6,7,0]])
 #i/o
 def exportData(name, index, data, heu=-1):
     subname = "-h" + str(heu) if heu > -1 else ""
-    solution = f"output/{index}_{name}{subname}" + '_solution.txt'
-    search = f"output/{index}_{name}{subname}" + '_search.txt'
+    solution = f"Assignment_2/output/{index}_{name}{subname}" + '_solution.txt'
+    search = f"Assignment_2/output/{index}_{name}{subname}" + '_search.txt'
     file1 = open(solution, 'w')
     file2 = open(search, 'w')
     if isinstance(data[0], node.Node):
@@ -187,14 +187,14 @@ def getTotalTimeAndTotalNoSolution(directory, matchingString):
                 
 
 
-directory = 'C:/Users/Chun/Documents/Comp472_Fall_2020/Assignment_2/output/'
+directory = 'Assignment_2/output/'
 filenameMatchString = '*solution.txt'
 getTotalLineCount(directory)
 getTotalTimeAndTotalNoSolution(directory, filenameMatchString)
 
 
 
-inputData = importData('samplePuzzles.txt')
+inputData = importData('Assignment_2/competitivePuzzles.txt')
 print(inputData)
 
 # In[253]:
@@ -206,17 +206,17 @@ t=xpuzzle.XPuzzle(2, 4, inputData[3]) #inputData[0] no solution
 t.doMove("C")
 t.printPuzzle()
 
-s=search.Search(t)
-p = s.bestFirst()
-p.state.printPuzzle()
-p = s.aStar(1)
-p.state.printPuzzle()
-p.state.manhattanDistance()
+#s=search.Search(t)
+#p = s.bestFirst()
+#p.state.printPuzzle()
+#p = s.aStar(1)
+#p.state.printPuzzle()
+#p.state.manhattanDistance()
 
 
 # In[ ]:
 # driver for A* and GBFS test
-inputData = importData('samplePuzzles.txt')
+inputData = importData('Assignment_2/competitivePuzzles.txt')
 print(inputData, end='\n\n')
 
 index = 3
@@ -232,7 +232,7 @@ for heuristic in range(2):
 
 # In[ ]:
 # process driver
-inputData = importData('samplePuzzles.txt')
+inputData = importData('Assignment_2/competitivePuzzles.txt')
 print(inputData, end='\n\n')
 process(inputData)
 
