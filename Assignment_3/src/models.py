@@ -181,16 +181,16 @@ class NaiveBayes:
         '''
             Determines probability of each test example against all classes and predicts the label
             against which the class probability is maximum
-        '''       
+        '''
        
         predictions = []  # to store prediction of each test example
         for doc in test_set:
             #preprocess the test example the same way we did for training set exampels
-            cleaned_doc = util.preProcess(doc)
+            cleaned_doc = util.preProcess(doc[0])
 
             #simply get the posterior probability of every example
             # get prob of this example for both classes
-            post_prob = self.getExampleProb(cleaned_doc)
+            post_prob = self.getDocProb(cleaned_doc)
 
             #simply pick the max value and map against self.classes!
             predictions.append(self.classes[np.argmax(post_prob)])
