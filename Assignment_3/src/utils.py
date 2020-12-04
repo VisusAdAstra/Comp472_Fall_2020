@@ -7,7 +7,7 @@ import nltk
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 
-import models as model
+from . import models as model
 
 
 # ref:https://towardsdatascience.com/multinomial-naive-bayes-classifier-for-text-analysis-python-8dd6825ece67
@@ -30,7 +30,7 @@ def exportData(name, index, data, heu=-1):
     file2.close()
     
 
-def preprocess(str_arg):
+def preProcess(str_arg):
     """"
         Return the preprocessed string in tokenized form
     """

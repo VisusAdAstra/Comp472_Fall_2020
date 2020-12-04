@@ -4,7 +4,7 @@ import pandas as pd
 from sklearn.metrics import precision_score, recall_score, f1_score, accuracy_score
 from collections import defaultdict
 
-import utils as util
+from . import utils as util
 
 
 class EnsembleModel(torch.nn.Module):
@@ -55,7 +55,6 @@ class TweetDataset(torch.utils.data.Dataset):
 
 
 class NaiveBayes:
-    
     def __init__(self,unique_classes):
         # Constructor is sinply passed with unique number of classes of the training set
         self.classes=unique_classes 
@@ -77,27 +76,27 @@ class NaiveBayes:
             1. dataset - shape = (m X d)
             2. labels - shape = (m,)        
         '''
-        self.examples=dataset
+        self.docs=dataset
         self.labels=labels
         self.bow_dicts=np.array([defaultdict(lambda:0) for index in range(self.classes.shape[0])])
         
         #only convert to numpy arrays if initially not passed as numpy arrays - else its a useless recomputation
-        if not isinstance(self.examples,np.ndarray): 
-            self.examples=np.array(self.examples)
+        if not isinstance(self.docs,np.ndarray): 
+            self.docs=np.array(self.docs)
         if not isinstance(self.labels,np.ndarray): 
             self.labels=np.array(self.labels)
             
         #constructing BoW for each category
-        for index,cat in enumerate(self.classes):
-            #filter all examples of category == cat
-            all_cat_examples=self.examples[self.labels==cat] 
+        for index, cat in enumerate(self.classes):
+            #filter all docs of category == cat
+            all_cat_docs = self.docs[self.labels==cat] 
             
-            #get examples preprocessed
-            cleaned_examples=[util.preprocess(cat_example) for cat_example in all_cat_examples]
-            cleaned_examples=pd.DataFrame(data=cleaned_examples)
+            #get docs preprocessed
+            cleaned_docs=[util.preProcess(cat_example) for cat_example in all_cat_docs]
+            cleaned_docs=pd.DataFrame(data=cleaned_docs)
             
             #now costruct BoW of this particular category
-            np.apply_along_axis(self.addToBow,1,cleaned_examples,index)
+            np.apply_along_axis(self.addToBow,1,cleaned_docs,index)
             
         
         '''
@@ -184,17 +183,17 @@ class NaiveBayes:
             against which the class probability is maximum
         '''       
        
-        predictions=[] #to store prediction of each test example
-        for doc in test_set: 
-                                              
-            #preprocess the test example the same way we did for training set exampels                                  
-            cleaned_doc=util.preprocess(doc) 
-             
-            #simply get the posterior probability of every example                                  
-            post_prob=self.getExampleProb(cleaned_doc) #get prob of this example for both classes
-            
+        predictions = []  # to store prediction of each test example
+        for doc in test_set:
+            #preprocess the test example the same way we did for training set exampels
+            cleaned_doc = util.preProcess(doc)
+
+            #simply get the posterior probability of every example
+            # get prob of this example for both classes
+            post_prob = self.getExampleProb(cleaned_doc)
+
             #simply pick the max value and map against self.classes!
             predictions.append(self.classes[np.argmax(post_prob)])
-                
+
         return np.array(predictions)
 
