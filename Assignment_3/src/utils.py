@@ -52,10 +52,14 @@ def test(prediction, target, dataset=None, out=False):
     """
     t = np.array([x.item() for x in target])
     p = np.array([pred(x) for x in prediction])
+    if(model.filter == False):
+        filename = "trace_NB-BOW-OV.txt "
+    else:
+        filename = "trace_NB-BOW-FV.txt"
     if out is not False:
         if dataset is None:
             raise ValueError("Dataset is needed to retrieve tweet ids!")
-        with open("eval_NB-BOW-" + id + ".txt", "w") as file:
+        with open(filename, "w") as file:
             for i in range(len(dataset)):
                 tweet_id = dataset[i][2]
                 prediction_text = "yes" if pred(prediction[i]) == 1 else "no"
@@ -64,7 +68,7 @@ def test(prediction, target, dataset=None, out=False):
                 outcome = "correct" if prediction_text == target_text else "wrong"
                 line = """{}  {}  {:.4}  {}  {}\n""".format(tweet_id, prediction_text, prediction_proba, target_text, outcome)
                 file.write(line)
-        print(f"Trace file produced: 'eval_NB-BOW-{id}.txt'")
+        print(f"Trace file produced: '{filename}'")
     try:
         pre = precision_score(t, p)
         rec = recall_score(t, p)
@@ -86,6 +90,10 @@ def evaluateModel(model, prediction, target):
     t_no = np.array([(lambda x: 1 if x == 0 else 0)(n) for n in t_yes])
     p_yes = np.array([pred(x) for x in prediction])
     p_no = np.array([(lambda x: 1 if x == 0 else 0)(n) for n in p_yes])
+    if(model.filter == False):
+        filename = "eval_NB-BOW-OV.txt "
+    else:
+        filename = "eval_NB-BOW-FV.txt"
     try:
         pre_yes = precision_score(t_yes, p_yes)
         rec_yes = recall_score(t_yes, p_yes)
@@ -98,10 +106,10 @@ def evaluateModel(model, prediction, target):
     except ValueError:
         f1_yes = pre_yes = rec_yes = 0
         f1_no = pre_no = rec_no = 0
-    with open("eval_NB-BOW-" + model.id + ".txt", "w") as file:
+    with open(filename, "w") as file:
         file.write("{:.4}\n".format(acc))
         file.write("{:.4}  {:.4}\n".format(pre_yes, pre_no))
         file.write("{:.4}  {:.4}\n".format(rec_yes, rec_no))
         file.write("{:.4}  {:.4}\n".format(f1_yes, f1_no))
-    print(f"Evaluation file produced: 'eval_NB-BOW-{model.id}.txt'")
+    print(f"Evaluation file produced: '{filename}'")
 

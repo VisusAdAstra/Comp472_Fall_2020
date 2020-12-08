@@ -58,10 +58,8 @@ class NB_BOW:
     def __init__(self, unique_classes, filter = False):
         # Constructor is sinply passed with unique number of classes of the training set
         self.classes = unique_classes
-        if(filter == False):
-            self.id = "OV"
-        else:
-            self.id = "FV"
+        self.smoothing = 0.01
+        self.filter = filter
 
     def addToBow(self, document, dict_index):
         '''
@@ -73,6 +71,15 @@ class NB_BOW:
         for token_word in document.split():
             self.bow_dicts[dict_index][token_word] += 1
 
+    def filterWord(self):
+        '''
+            dict_index = class_index
+        '''
+        for dict_index in range(self.bow_dicts.shape[0]):
+            for token_word in self.bow_dicts[dict_index].copy():
+                if(self.bow_dicts[dict_index][token_word] == 1):
+                    self.bow_dicts[dict_index].pop(token_word, None)
+                
     def train(self, dataset, labels):
         '''
             Parameters:
@@ -84,7 +91,7 @@ class NB_BOW:
         self.bow_dicts = np.array([defaultdict(lambda:0)
                                    for index in range(self.classes.shape[0])])
 
-        #only convert to numpy arrays if initially not passed as numpy arrays - else its a useless recomputation
+        #validate input format
         if not isinstance(self.docs, np.ndarray):
             self.docs = np.array(self.docs)
         if not isinstance(self.labels, np.ndarray):
@@ -96,12 +103,17 @@ class NB_BOW:
             all_cat_docs = self.docs[self.labels == cat]
 
             #get docs preprocessed
-            cleaned_docs = [util.preProcess(cat_example)
-                            for cat_example in all_cat_docs]
+            cleaned_docs = [util.preProcess(cat_doc)
+                            for cat_doc in all_cat_docs]
             cleaned_docs = pd.DataFrame(data=cleaned_docs)
 
             #now costruct BoW of this particular category
             np.apply_along_axis(self.addToBow, 1, cleaned_docs, index)
+
+        #print(self.bow_dicts[1]['indians'])
+        if (self.filter == True):
+            self.filterWord()
+        #print(self.bow_dicts[1]['indians'])
 
         '''
             ------------------------------------------------------------------------------------
@@ -116,7 +128,6 @@ class NB_BOW:
             
         '''
 
-        smoothing = 0.01
         prob_classes = np.empty(self.classes.shape[0])
         all_words = []
         cat_word_counts = np.empty(self.classes.shape[0])
@@ -129,7 +140,7 @@ class NB_BOW:
             #Calculating total counts of all the words of each class
             count = list(self.bow_dicts[index].values())
             cat_word_counts[index] = np.sum(np.array(list(
-                self.bow_dicts[index].values()))) + smoothing  # |v| is remaining to be added
+                self.bow_dicts[index].values()))) + self.smoothing  # |v| is remaining to be added
 
             #get all words of this category
             all_words += self.bow_dicts[index].keys()
@@ -141,7 +152,7 @@ class NB_BOW:
 
         #computing denominator value
         denoms = np.array([cat_word_counts[index]+self.vocab_length +
-                           smoothing for index, cat in enumerate(self.classes)])
+                           self.smoothing for index, cat in enumerate(self.classes)])
 
         '''
             Now that we have everything precomputed as well, its better to organize everything in a tuple 
@@ -169,19 +180,16 @@ class NB_BOW:
             #split the test example and get p of each test word
             for test_token in test_doc.split():
                 #get total count of this test token from it's respective training dict to get numerator value
-                test_token_counts = self.cats_info[index][0].get(
-                    test_token, 0)+1
+                test_token_counts = self.cats_info[index][0].get(test_token, 0) + 1 # + 1 laplace smoothing
 
                 #now get likelihood of this test_token word
-                test_token_prob = test_token_counts / \
-                    float(self.cats_info[index][2])
+                test_token_prob = test_token_counts / float(self.cats_info[index][2])
                 likelihood_prob[index] += np.log(test_token_prob)
 
         # we have likelihood estimate of the given example against every class but we need posterior probility
         post_prob = np.empty(self.classes.shape[0])
         for index, cat in enumerate(self.classes):
-            post_prob[index] = likelihood_prob[index] + \
-                np.log(self.cats_info[index][1])
+            post_prob[index] = likelihood_prob[index] + np.log(self.cats_info[index][1])
 
         return post_prob
 
@@ -204,3 +212,4 @@ class NB_BOW:
             predictions.append(self.classes[np.argmax(post_prob)])
 
         return np.array(predictions)
+
