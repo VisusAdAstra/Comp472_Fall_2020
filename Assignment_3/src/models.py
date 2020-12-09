@@ -4,7 +4,9 @@ import pandas as pd
 from sklearn.metrics import precision_score, recall_score, f1_score, accuracy_score
 from collections import defaultdict
 
+import importlib
 from . import utils as util
+importlib.reload(util)
 
 
 class EnsembleModel(torch.nn.Module):
@@ -180,7 +182,7 @@ class NB_BOW:
             #split the test example and get p of each test word
             for test_token in test_doc.split():
                 #get total count of this test token from it's respective training dict to get numerator value
-                test_token_counts = self.cats_info[index][0].get(test_token, 0) + 1 # + 1 laplace smoothing
+                test_token_counts = self.cats_info[index][0].get(test_token, 0) + 1*self.smoothing # + 1 laplace smoothing
 
                 #now get likelihood of this test_token word
                 test_token_prob = test_token_counts / float(self.cats_info[index][2])
@@ -193,23 +195,24 @@ class NB_BOW:
 
         return post_prob
 
-    def test(self, test_set):
+    def predict(self, test_set):
         '''
             Determines probability of each test example against all classes and predicts the label
             against which the class probability is maximum
         '''
 
         predictions = []  # to store prediction of each test example
-        for doc in test_set:
+        probs = np.zeros((len(test_set), 2))
+        for index, doc in enumerate(test_set):
             #preprocess the test example the same way we did for training set exampels
             cleaned_doc = util.preProcess(doc[0])
 
-            #simply get the posterior probability of every example
-            # get prob of this example for both classes
+            #get the posterior probability for both classes
             post_prob = self.getDocProb(cleaned_doc)
+            probs[index] = post_prob/(post_prob[0]+ post_prob[1])
 
             #simply pick the max value and map against self.classes!
             predictions.append(self.classes[np.argmax(post_prob)])
 
-        return np.array(predictions)
+        return np.array(predictions), probs
 

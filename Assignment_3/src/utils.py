@@ -7,7 +7,9 @@ import nltk
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 
+import importlib
 from . import models as model
+importlib.reload(model)
 
 
 # ref:https://towardsdatascience.com/multinomial-naive-bayes-classifier-for-text-analysis-python-8dd6825ece67
@@ -41,7 +43,30 @@ def preProcess(str_arg):
     return cleaned_str 
 
 
-def test(prediction, target, dataset=None, out=False):
+def displayResult(model, X_test, y_test):
+    """"
+        Display temporary result
+    """
+    y_pred, post_prob = model.predict(X_test)
+    test_acc=np.sum(y_pred == y_test.reshape(-1))/float(y_test.shape[0]) 
+
+    print ('----------------- Result ---------------------')
+    print ("Test Set Size:     ",y_test.shape[0])
+    print ("Test Set Accuracy: ",test_acc*100,"%")
+    print(y_pred)
+    print(y_test.reshape(-1))
+    #print(post_prob)
+
+
+def processData(models, X_test, y_test, dataset):
+    for model in models:
+        displayResult(model, X_test, y_test)
+        prec, rec, f1 = statModel(model, X_test, y_test, dataset, True)
+        evaluateModel(model, X_test, y_test)
+        print("TEST: Precision: {0:.4}\tRecall: {1:.4}\tF1: {2:.4}".format(prec, rec, f1))    
+
+
+def statModel(model, X_test, y_test, dataset=None, out=False):
     """
     Returns evaluation metrics
     :param target: tensor containing target values
@@ -50,35 +75,35 @@ def test(prediction, target, dataset=None, out=False):
     :param out: (optional, required to produce trace file) whether to produce trace or not
     :return: tuple containing precision, recall, and f1 values
     """
-    t = np.array([x.item() for x in target])
-    p = np.array([pred(x) for x in prediction])
+    dataset = np.array(dataset)
+    y_pred, post_prob = model.predict(X_test)
     if(model.filter == False):
-        filename = "trace_NB-BOW-OV.txt "
+        filename = "result/trace_NB-BOW-OV.txt "
     else:
-        filename = "trace_NB-BOW-FV.txt"
+        filename = "result/trace_NB-BOW-FV.txt"
     if out is not False:
         if dataset is None:
             raise ValueError("Dataset is needed to retrieve tweet ids!")
         with open(filename, "w") as file:
             for i in range(len(dataset)):
-                tweet_id = dataset[i][2]
-                prediction_text = "yes" if pred(prediction[i]) == 1 else "no"
-                prediction_proba = prediction[i][1].item() if prediction_text == "yes" else prediction[i][0].item()
-                target_text = "yes" if target[i] == 1 else "no"
+                tweet_id = dataset[i][0]
+                prediction_text = "yes" if y_pred[i] == 1 else "no"
+                prediction_proba = post_prob[i][0].item() if prediction_text == "yes" else post_prob[i][1].item()
+                target_text = "yes" if y_test[i] == 1 else "no"
                 outcome = "correct" if prediction_text == target_text else "wrong"
                 line = """{}  {}  {:.4}  {}  {}\n""".format(tweet_id, prediction_text, prediction_proba, target_text, outcome)
                 file.write(line)
         print(f"Trace file produced: '{filename}'")
     try:
-        pre = precision_score(t, p)
-        rec = recall_score(t, p)
-        f1 = f1_score(t, p)
+        pre = precision_score(y_test, y_pred)
+        rec = recall_score(y_test, y_pred)
+        f1 = f1_score(y_test, y_pred)
     except ValueError:
         f1 = pre = rec = 0
     return pre, rec, f1
 
 
-def evaluateModel(model, prediction, target):
+def evaluateModel(model, X_test, y_test):
     """
     Produces output file containing model evaluation
     :param model: lstm torch model
@@ -86,14 +111,15 @@ def evaluateModel(model, prediction, target):
     :param target: tensor containing target values
     :return: None
     """
-    t_yes = np.array([x.item() for x in target])
+    y_pred, post_prob = model.predict(X_test)
+    t_yes = y_test
     t_no = np.array([(lambda x: 1 if x == 0 else 0)(n) for n in t_yes])
-    p_yes = np.array([pred(x) for x in prediction])
+    p_yes = y_pred
     p_no = np.array([(lambda x: 1 if x == 0 else 0)(n) for n in p_yes])
     if(model.filter == False):
-        filename = "eval_NB-BOW-OV.txt "
+        filename = "result/eval_NB-BOW-OV.txt "
     else:
-        filename = "eval_NB-BOW-FV.txt"
+        filename = "result/eval_NB-BOW-FV.txt"
     try:
         pre_yes = precision_score(t_yes, p_yes)
         rec_yes = recall_score(t_yes, p_yes)
