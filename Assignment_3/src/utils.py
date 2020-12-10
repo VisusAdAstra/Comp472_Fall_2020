@@ -36,7 +36,7 @@ def preProcess(str_arg):
     """"
         Return the preprocessed string in tokenized form
     """
-    cleaned_str=re.sub('[^a-z\s]+',' ',str_arg,flags=re.IGNORECASE) #every char except alphabets is replaced
+    cleaned_str=re.sub('[^a-z0-9\s]+',' ',str_arg,flags=re.IGNORECASE) #every char except alphabets is replaced
     cleaned_str=re.sub('(\s+)',' ',cleaned_str) #multiple spaces are replaced by single space
     cleaned_str=cleaned_str.lower() #converting the cleaned string to lower case
     

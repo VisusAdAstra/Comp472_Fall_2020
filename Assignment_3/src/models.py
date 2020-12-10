@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd 
 from sklearn.metrics import precision_score, recall_score, f1_score, accuracy_score
 from collections import defaultdict
+from scipy.special import softmax
 
 import importlib
 from . import utils as util
@@ -113,9 +114,15 @@ class NB_BOW:
             np.apply_along_axis(self.addToBow, 1, cleaned_docs, index)
 
         #print(self.bow_dicts[1]['indians'])
+        print(len(self.bow_dicts[1]))
+        print(len(self.bow_dicts[0]))
         if (self.filter == True):
+            with open("test.txt", "w") as file: 
+                file.write(str(self.bow_dicts))
             self.filterWord()
         #print(self.bow_dicts[1]['indians'])
+        print(len(self.bow_dicts[1])) 
+        print(len(self.bow_dicts[0]))       
 
         '''
             ------------------------------------------------------------------------------------
@@ -209,7 +216,7 @@ class NB_BOW:
 
             #get the posterior probability for both classes
             post_prob = self.getDocProb(cleaned_doc)
-            probs[index] = post_prob/(post_prob[0]+ post_prob[1])
+            probs[index] = softmax(post_prob/(post_prob[0]+ post_prob[1]))
 
             #simply pick the max value and map against self.classes!
             predictions.append(self.classes[np.argmax(post_prob)])
