@@ -1,4 +1,3 @@
-import torch
 import numpy as np
 import pandas as pd 
 from sklearn.metrics import precision_score, recall_score, f1_score, accuracy_score
@@ -14,53 +13,6 @@ from nltk.corpus import wordnet
 import importlib
 from . import utils as util
 importlib.reload(util)
-
-
-class EnsembleModel(torch.nn.Module):
-    def __init__(self, embeddings_tensor,
-                 hidden_size=256,
-                 dropout=.5,
-                 embedding_size=300, ):
-        super().__init__()
-        self.embedding = torch.nn.Embedding.from_pretrained(embeddings_tensor)
-        self.lstm = torch.nn.LSTM(embedding_size,
-                                  hidden_size,
-                                  batch_first=True,
-                                  bidirectional=False,
-                                  num_layers=3,
-                                  dropout=dropout)
-        self.linear = torch.nn.Linear(in_features=hidden_size, out_features=2)
-        self.sigmoid = torch.nn.Sigmoid()
-
-    def forward(self, input):
-        output = self.embedding(input)
-        _, hidden = self.lstm(output)
-        hidden = hidden[0]
-        output = self.linear(hidden[-1])
-        output = self.sigmoid(output)
-        return output
-
-
-class TweetDataset(torch.utils.data.Dataset):
-    """
-    Inherited class used to fetch datapoints from the dataset and return them as model-ready tuples of tweets and
-    annotations
-    """
-    def __init__(self, ds_loc, embeddings_model):
-        self.df = pd.read_csv(ds_loc, sep="\t")
-        self.lexicon = Lexicon(embeddings_model)
-
-    def __len__(self):
-        return len(self.df)
-
-    def __getitem__(self, index):
-        tweet = self.df.iloc[index, 1]
-        tweet = tensorFromSentence(self.lexicon, tweet)
-        tweet_id = self.df.iloc[index, 0]
-        annotation = self.df.iloc[index, 2]
-        annotation = [1] if annotation == 'yes' else [0]
-        annotation = torch.tensor(annotation, dtype=torch.long)
-        return tweet, annotation, tweet_id
 
 
 class NB_BOW:
@@ -240,7 +192,8 @@ class NB_BOW:
 
             #get the posterior probability for both classes
             post_prob = self.getDocProb(cleaned_doc)
-            probs[index] = softmax(post_prob/(post_prob[0]+ post_prob[1]))
+            #eliminated the normalization constant, the probability ![0,1]
+            probs[index] = softmax(post_prob/10)
 
             #simply pick the max value and map against self.classes!
             predictions.append(self.classes[np.argmax(post_prob)])
