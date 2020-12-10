@@ -13,6 +13,8 @@ importlib.reload(model)
 
 
 # ref:https://towardsdatascience.com/multinomial-naive-bayes-classifier-for-text-analysis-python-8dd6825ece67
+# https://towardsdatascience.com/unfolding-na%C3%AFve-bayes-from-scratch-2e86dcae4b01
+# https://github.com/ssghule/Naive-Bayes-and-Bag-of-Words-for-Text-Classification-Problem/blob/master/geolocate.py
 def exportData(name, index, data, heu=-1):
     subname = "-h" + str(heu) if heu > -1 else ""
     solution = f"output/{index}_{name}{subname}" + '_solution.txt'
@@ -36,7 +38,7 @@ def preProcess(str_arg):
     """"
         Return the preprocessed string in tokenized form
     """
-    cleaned_str=re.sub('[^a-z0-9\s]+',' ',str_arg,flags=re.IGNORECASE) #every char except alphabets is replaced
+    cleaned_str=re.sub('[^a-z0-9-\s]+',' ',str_arg,flags=re.IGNORECASE) #every char except alphabets is replaced
     cleaned_str=re.sub('(\s+)',' ',cleaned_str) #multiple spaces are replaced by single space
     cleaned_str=cleaned_str.lower() #converting the cleaned string to lower case
     

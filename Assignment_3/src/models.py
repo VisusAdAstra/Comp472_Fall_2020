@@ -4,6 +4,12 @@ import pandas as pd
 from sklearn.metrics import precision_score, recall_score, f1_score, accuracy_score
 from collections import defaultdict
 from scipy.special import softmax
+import nltk
+#nltk.download('wordnet')
+#nltk.download('averaged_perceptron_tagger')
+from nltk.stem import WordNetLemmatizer 
+from nltk.corpus import wordnet
+
 
 import importlib
 from . import utils as util
@@ -64,6 +70,18 @@ class NB_BOW:
         self.smoothing = 0.01
         self.filter = filter
 
+    def get_wordnet_pos(self, word):
+        '''
+            Lemmatize with POS Tag
+            Map POS tag to first character lemmatize() accepts
+        '''
+        tag = nltk.pos_tag([word])[0][1][0].upper()
+        tag_dict = {"J": wordnet.ADJ,
+                    "N": wordnet.NOUN,
+                    "V": wordnet.VERB,
+                    "R": wordnet.ADV}
+        return tag_dict.get(tag, wordnet.NOUN)
+
     def addToBow(self, document, dict_index):
         '''
             dict_index = class_index
@@ -83,12 +101,13 @@ class NB_BOW:
                 if(self.bow_dicts[dict_index][token_word] == 1):
                     self.bow_dicts[dict_index].pop(token_word, None)
                 
-    def train(self, dataset, labels):
+    def trainModel(self, dataset, labels):
         '''
             Parameters:
             1. dataset - shape = (m X d)
             2. labels - shape = (m,)        
         '''
+
         self.docs = dataset
         self.labels = labels
         self.bow_dicts = np.array([defaultdict(lambda:0)
@@ -108,6 +127,12 @@ class NB_BOW:
             #get docs preprocessed
             cleaned_docs = [util.preProcess(cat_doc)
                             for cat_doc in all_cat_docs]
+            #lemmatization 
+            lemmatizer = WordNetLemmatizer()
+            if (self.filter == True):
+                cleaned_docs = [" ".join([lemmatizer.lemmatize(w, self.get_wordnet_pos(w)) for w in nltk.word_tokenize(cleaned_doc)])
+                            for cleaned_doc in cleaned_docs]
+
             cleaned_docs = pd.DataFrame(data=cleaned_docs)
 
             #now costruct BoW of this particular category
@@ -154,14 +179,13 @@ class NB_BOW:
             #get all words of this category
             all_words += self.bow_dicts[index].keys()
 
-        #combine all words of every category & make them unique to get vocabulary -V- of entire training set
+        #combine all words of every category create set of unique vocabulary -V- of entire training set
 
         self.vocab = np.unique(np.array(all_words))
         self.vocab_length = self.vocab.shape[0]
 
-        #computing denominator value
-        denoms = np.array([cat_word_counts[index]+self.vocab_length +
-                           self.smoothing for index, cat in enumerate(self.classes)])
+        #computing denominator value (|V| + 1)*smoothing
+        denoms = np.array([cat_word_counts[index] + (self.vocab_length + 1)*self.smoothing for index, cat in enumerate(self.classes)])
 
         '''
             Now that we have everything precomputed as well, its better to organize everything in a tuple 
