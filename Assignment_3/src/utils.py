@@ -89,7 +89,7 @@ def statModel(model, X_test, y_test, dataset=None, out=False):
             for i in range(len(dataset)):
                 tweet_id = dataset[i][0]
                 prediction_text = "yes" if y_pred[i] == 1 else "no"
-                prediction_proba = post_prob[i][0].item() if prediction_text == "yes" else post_prob[i][1].item()
+                prediction_proba = post_prob[i][1].item() if prediction_text == "yes" else post_prob[i][0].item()
                 target_text = "yes" if y_test[i] == 1 else "no"
                 outcome = "correct" if prediction_text == target_text else "wrong"
                 line = """{}  {}  {:.4}  {}  {}\n""".format(tweet_id, prediction_text, prediction_proba, target_text, outcome)

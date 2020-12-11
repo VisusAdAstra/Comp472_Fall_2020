@@ -194,6 +194,8 @@ class NB_BOW:
             post_prob = self.getDocProb(cleaned_doc)
             #eliminated the normalization constant, the probability ![0,1]
             probs[index] = softmax(post_prob/10)
+            #print(post_prob)
+            #print(probs[index])
 
             #simply pick the max value and map against self.classes!
             predictions.append(self.classes[np.argmax(post_prob)])
