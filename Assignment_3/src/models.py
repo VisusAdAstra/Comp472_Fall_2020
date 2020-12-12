@@ -24,7 +24,7 @@ class NB_BOW:
         self.smoothing = 0.01
         self.filter = filter
 
-    def get_wordnet_pos(self, word):
+    def getWordnetPos(self, word):
         '''
             Lemmatize with POS Tag
             Map POS tag to first character lemmatize() accepts
@@ -84,7 +84,7 @@ class NB_BOW:
             #lemmatization 
             lemmatizer = WordNetLemmatizer()
             if (self.filter == True):
-                cleaned_docs = [" ".join([lemmatizer.lemmatize(w, self.get_wordnet_pos(w)) for w in nltk.word_tokenize(cleaned_doc)])
+                cleaned_docs = [" ".join([lemmatizer.lemmatize(w, self.getWordnetPos(w)) for w in nltk.word_tokenize(cleaned_doc)])
                             for cleaned_doc in cleaned_docs]
 
             cleaned_docs = pd.DataFrame(data=cleaned_docs)
@@ -92,14 +92,14 @@ class NB_BOW:
             #costruct BoW of this particular category
             np.apply_along_axis(self.addToBow, 1, cleaned_docs, index)
 
-        print(len(self.bow_dicts[1]))
         print(len(self.bow_dicts[0]))
+        print(len(self.bow_dicts[1]))
         if (self.filter == True):
             with open("test.txt", "w") as file: 
                 file.write(str(self.bow_dicts))
             self.filterWord()
-        print(len(self.bow_dicts[1])) 
-        print(len(self.bow_dicts[0]))       
+        print(len(self.bow_dicts[0])) 
+        print(len(self.bow_dicts[1]))
 
         '''
             Test Time Forumla: {for each word w [ count(w|c)+1*sm ] / [ count(c) + (|V| + 1)*sm ] } * p(c)
@@ -139,16 +139,16 @@ class NB_BOW:
 
     def getDocProb(self, test_doc):
         '''
-            Probability of test example in ALL CLASSES
+            Probability of test sample in ALL CLASSES
         '''
 
         # to store probability w.r.t each class
         likelihood_prob = np.zeros(self.classes.shape[0])
 
-        # finding probability w.r.t each class of the given test example
+        # finding probability w.r.t each class of the given test sample
         for index, cat in enumerate(self.classes):
             #for each word w [ count(w|c)+1 ] / [ count(c) + |V| + 1 ]
-            #split the test example and get p of each test word
+            #split the test sample and get p of each test word
             for test_token in test_doc.split():
                 #get total count of this test token from it's respective training dict to get numerator value
                 test_token_counts = self.cats_info[index][0].get(test_token, 0) + 1*self.smoothing # + 1 laplace smoothing
