@@ -4,8 +4,8 @@ from sklearn.metrics import precision_score, recall_score, f1_score, accuracy_sc
 from collections import defaultdict
 from scipy.special import softmax
 import nltk
-#nltk.download('wordnet')
-#nltk.download('averaged_perceptron_tagger')
+nltk.download('wordnet')
+nltk.download('averaged_perceptron_tagger')
 from nltk.stem import WordNetLemmatizer 
 from nltk.corpus import wordnet
 
@@ -17,12 +17,14 @@ importlib.reload(util)
 
 class NB_BOW:
     def __init__(self, unique_classes, filter = False):
-        # Constructor is sinply passed with unique number of classes of the training set
+        '''
+            Constructor is sinply passed with unique number of classes of the training set
+        '''
         self.classes = unique_classes
         self.smoothing = 0.01
         self.filter = filter
 
-    def get_wordnet_pos(self, word):
+    def getWordnetPos(self, word):
         '''
             Lemmatize with POS Tag
             Map POS tag to first character lemmatize() accepts
@@ -82,36 +84,28 @@ class NB_BOW:
             #lemmatization 
             lemmatizer = WordNetLemmatizer()
             if (self.filter == True):
-                cleaned_docs = [" ".join([lemmatizer.lemmatize(w, self.get_wordnet_pos(w)) for w in nltk.word_tokenize(cleaned_doc)])
+                cleaned_docs = [" ".join([lemmatizer.lemmatize(w, self.getWordnetPos(w)) for w in nltk.word_tokenize(cleaned_doc)])
                             for cleaned_doc in cleaned_docs]
 
             cleaned_docs = pd.DataFrame(data=cleaned_docs)
 
-            #now costruct BoW of this particular category
+            #costruct BoW of this particular category
             np.apply_along_axis(self.addToBow, 1, cleaned_docs, index)
 
-        #print(self.bow_dicts[1]['indians'])
-        print(len(self.bow_dicts[1]))
         print(len(self.bow_dicts[0]))
+        print(len(self.bow_dicts[1]))
         if (self.filter == True):
             with open("test.txt", "w") as file: 
                 file.write(str(self.bow_dicts))
             self.filterWord()
-        #print(self.bow_dicts[1]['indians'])
-        print(len(self.bow_dicts[1])) 
-        print(len(self.bow_dicts[0]))       
+        print(len(self.bow_dicts[0])) 
+        print(len(self.bow_dicts[1]))
 
         '''
-            ------------------------------------------------------------------------------------
-            Test Time Forumla: {for each word w [ count(w|c)+1 ] / [ count(c) + |V| + 1 ] } * p(c)
-            ------------------------------------------------------------------------------------
-            
-            We are done with constructing of BoW for each category. But we need to precompute a few 
-            other calculations at training time too:
+            Test Time Forumla: {for each word w [ count(w|c)+1*sm ] / [ count(c) + (|V| + 1)*sm ] } * p(c)
             1. prior probability of each class - p(c)
-            2. vocabulary |V| 
-            3. denominator value of each class - [ count(c) + |V| + 1 ] 
-            
+            2. vocabulary |V| + 1 UNK
+            3. denominator each class - [ count(c) + (|V| + 1)*sm ] 
         '''
 
         prob_classes = np.empty(self.classes.shape[0])
@@ -132,37 +126,29 @@ class NB_BOW:
             all_words += self.bow_dicts[index].keys()
 
         #combine all words of every category create set of unique vocabulary -V- of entire training set
-
         self.vocab = np.unique(np.array(all_words))
         self.vocab_length = self.vocab.shape[0]
 
         #computing denominator value (|V| + 1)*smoothing
         denoms = np.array([cat_word_counts[index] + (self.vocab_length + 1)*self.smoothing for index, cat in enumerate(self.classes)])
 
-        '''
-            Now that we have everything precomputed as well, its better to organize everything in a tuple 
-            rather than to have a separate list for every thing.
-
-            Every element of self.cats_info has a tuple of values
-            Each tuple has a dict at index 0, prior probability at index 1, denominator value at index 2
-        '''
-
+        #dict at index 0, prior probability at index 1, denominator value at index 2
         self.cats_info = [(self.bow_dicts[index], prob_classes[index], denoms[index])
                           for index, cat in enumerate(self.classes)]
         self.cats_info = np.array(self.cats_info)
 
     def getDocProb(self, test_doc):
         '''
-            Probability of test example in ALL CLASSES
+            Probability of test sample in ALL CLASSES
         '''
 
         # to store probability w.r.t each class
         likelihood_prob = np.zeros(self.classes.shape[0])
 
-        #finding probability w.r.t each class of the given test example
+        # finding probability w.r.t each class of the given test sample
         for index, cat in enumerate(self.classes):
             #for each word w [ count(w|c)+1 ] / [ count(c) + |V| + 1 ]
-            #split the test example and get p of each test word
+            #split the test sample and get p of each test word
             for test_token in test_doc.split():
                 #get total count of this test token from it's respective training dict to get numerator value
                 test_token_counts = self.cats_info[index][0].get(test_token, 0) + 1*self.smoothing # + 1 laplace smoothing
@@ -171,7 +157,7 @@ class NB_BOW:
                 test_token_prob = test_token_counts / float(self.cats_info[index][2])
                 likelihood_prob[index] += np.log(test_token_prob)
 
-        # we have likelihood estimate of the given example against every class but we need posterior probility
+        # compute posterior probility from likelihood estimate of the given sample against every class
         post_prob = np.empty(self.classes.shape[0])
         for index, cat in enumerate(self.classes):
             post_prob[index] = likelihood_prob[index] + np.log(self.cats_info[index][1])
@@ -194,6 +180,8 @@ class NB_BOW:
             post_prob = self.getDocProb(cleaned_doc)
             #eliminated the normalization constant, the probability ![0,1]
             probs[index] = softmax(post_prob/10)
+            #print(post_prob)
+            #print(probs[index])
 
             #simply pick the max value and map against self.classes!
             predictions.append(self.classes[np.argmax(post_prob)])

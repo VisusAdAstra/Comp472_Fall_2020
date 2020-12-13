@@ -34,20 +34,19 @@ def exportData(name, index, data, heu=-1):
     
 
 def preProcess(str_arg):
-    """"
+    '''
         Return the preprocessed string in tokenized form
-    """
+    '''
     cleaned_str=re.sub('[^a-z0-9-\s]+',' ',str_arg,flags=re.IGNORECASE) #every char except alphabets is replaced
     cleaned_str=re.sub('(\s+)',' ',cleaned_str) #multiple spaces are replaced by single space
     cleaned_str=cleaned_str.lower() #converting the cleaned string to lower case
-    
     return cleaned_str 
 
 
 def displayResult(model, X_test, y_test):
-    """"
+    '''
         Display temporary result
-    """
+    '''
     y_pred, post_prob = model.predict(X_test)
     test_acc=np.sum(y_pred == y_test.reshape(-1))/float(y_test.shape[0]) 
 
@@ -60,22 +59,25 @@ def displayResult(model, X_test, y_test):
 
 
 def processData(models, X_test, y_test, dataset):
+    '''
+        Main process control
+    '''
     for model in models:
         displayResult(model, X_test, y_test)
         prec, rec, f1 = statModel(model, X_test, y_test, dataset, True)
-        evaluateModel(model, X_test, y_test)
+        evalModel(model, X_test, y_test)
         print("TEST: Precision: {0:.4}\tRecall: {1:.4}\tF1: {2:.4}".format(prec, rec, f1))    
 
 
 def statModel(model, X_test, y_test, dataset=None, out=False):
-    """
+    '''
     Returns evaluation metrics
     :param target: tensor containing target values
     :param prediction: tensor containing prediction values
     :param dataset: (optional, required to produce trace file) test dataset
     :param out: (optional, required to produce trace file) whether to produce trace or not
     :return: tuple containing precision, recall, and f1 values
-    """
+    '''
     dataset = np.array(dataset)
     y_pred, post_prob = model.predict(X_test)
     if(model.filter == False):
@@ -89,7 +91,7 @@ def statModel(model, X_test, y_test, dataset=None, out=False):
             for i in range(len(dataset)):
                 tweet_id = dataset[i][0]
                 prediction_text = "yes" if y_pred[i] == 1 else "no"
-                prediction_proba = post_prob[i][0].item() if prediction_text == "yes" else post_prob[i][1].item()
+                prediction_proba = post_prob[i][1].item() if prediction_text == "yes" else post_prob[i][0].item()
                 target_text = "yes" if y_test[i] == 1 else "no"
                 outcome = "correct" if prediction_text == target_text else "wrong"
                 line = """{}  {}  {:.4}  {}  {}\n""".format(tweet_id, prediction_text, prediction_proba, target_text, outcome)
@@ -104,14 +106,13 @@ def statModel(model, X_test, y_test, dataset=None, out=False):
     return pre, rec, f1
 
 
-def evaluateModel(model, X_test, y_test):
-    """
+def evalModel(model, X_test, y_test):
+    '''
     Produces output file containing model evaluation
-    :param model: lstm torch model
     :param prediction: tensor containing prediction values
     :param target: tensor containing target values
     :return: None
-    """
+    '''
     y_pred, post_prob = model.predict(X_test)
     t_yes = y_test
     t_no = np.array([(lambda x: 1 if x == 0 else 0)(n) for n in t_yes])
