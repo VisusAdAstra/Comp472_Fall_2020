@@ -4,8 +4,8 @@ from sklearn.metrics import precision_score, recall_score, f1_score, accuracy_sc
 from collections import defaultdict
 from scipy.special import softmax
 import nltk
-nltk.download('wordnet')
-nltk.download('averaged_perceptron_tagger')
+#nltk.download('wordnet')
+#nltk.download('averaged_perceptron_tagger')
 from nltk.stem import WordNetLemmatizer 
 from nltk.corpus import wordnet
 
