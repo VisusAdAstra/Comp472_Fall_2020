@@ -1,6 +1,4 @@
-git repo: github.com/darkheros12/Comp472_Fall_2020
-
-# Comp472_Assignment
+# AI-ML
 ## Topic
 Experiments with Machine Learning and Evaluation
 
